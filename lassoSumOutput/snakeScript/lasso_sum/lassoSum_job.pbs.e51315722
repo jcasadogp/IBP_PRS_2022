@@ -1,0 +1,125 @@
+Building DAG of jobs...
+Using shell: /data/leuven/344/vsc34483/miniconda/bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job       count    min threads    max threads
+------  -------  -------------  -------------
+all           1              1              1
+lasso1        1              1              1
+total         2              1              1
+
+Select jobs to execute...
+
+[Mon Nov 14 21:58:33 2022]
+rule lasso1:
+    input: /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/input_files/GWAS_summary_stats.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/input_files/plink_qc.cov, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/input_files/plink_qc.eigenvec, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/input_files/phenotypes.txt
+    output: /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/validation_plot.pdf, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/best_s_val.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/best_lambda_val.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/prs_results.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/validation_table.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/max_r_sqr.txt
+    jobid: 3
+    wildcards: PATH=/lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript
+    resources: tmpdir=/tmp/b83f9ce412
+
+Activating conda environment: /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/lasso_sum/.snakemake/conda/e4b820b1068878a04925e2a72c6da947
+Loading required package: usethis
+Downloading GitHub repo tshmak/lassosum@HEAD
+Installing 2 packages: RcppArmadillo, Matrix
+trying URL 'https://cloud.r-project.org/src/contrib/RcppArmadillo_0.11.4.2.1.tar.gz'
+Content type 'application/x-gzip' length 1372103 bytes (1.3 MB)
+==================================================
+downloaded 1.3 MB
+
+trying URL 'https://cloud.r-project.org/src/contrib/Matrix_1.5-3.tar.gz'
+Content type 'application/x-gzip' length 2163568 bytes (2.1 MB)
+==================================================
+downloaded 2.1 MB
+
+* installing *source* package ‘RcppArmadillo’ ...
+** package ‘RcppArmadillo’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+installing to /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/lasso_sum/.snakemake/conda/e4b820b1068878a04925e2a72c6da947/lib/R/library/00LOCK-RcppArmadillo/00new/RcppArmadillo/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (RcppArmadillo)
+* installing *source* package ‘Matrix’ ...
+** package ‘Matrix’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+installing to /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/lasso_sum/.snakemake/conda/e4b820b1068878a04925e2a72c6da947/lib/R/library/00LOCK-Matrix/00new/Matrix/libs
+** R
+** data
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (Matrix)
+
+The downloaded source packages are in
+	‘/local_scratch/51315722.tier2-p-moab-2.tier2.hpc.kuleuven.be/RtmpLcFJZk/downloaded_packages’
+Updating HTML index of packages in '.Library'
+Making 'packages.html' ... done
+* installing *source* package ‘lassosum’ ...
+** using staged installation
+** libs
+installing to /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/lasso_sum/.snakemake/conda/e4b820b1068878a04925e2a72c6da947/lib/R/library/00LOCK-lassosum/00new/lassosum/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (lassosum)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+3864 out of 4110 samples kept in pheno.
+3864 out of 3864 samples kept in covar.
+[Mon Nov 14 22:11:20 2022]
+Finished job 3.
+1 of 2 steps (50%) done
+Select jobs to execute...
+
+[Mon Nov 14 22:11:20 2022]
+localrule all:
+    input: /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/test.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/lasso_sum/tst.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/validation_plot.pdf, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/best_s_val.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/best_lambda_val.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/prs_results.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/validation_table.txt, /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/max_r_sqr.txt
+    jobid: 0
+    resources: tmpdir=/tmp/b83f9ce412
+
+[Mon Nov 14 22:11:20 2022]
+Finished job 0.
+2 of 2 steps (100%) done
+Complete log: /lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/lasso_sum/.snakemake/log/2022-11-14T215827.527350.snakemake.log

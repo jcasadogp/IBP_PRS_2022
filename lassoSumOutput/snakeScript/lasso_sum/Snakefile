@@ -1,0 +1,61 @@
+#need to input global vars for path to inputs
+#input for hg build
+#input for ethnic background
+#input for maf, other params
+PATH = "/lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript",
+GWAS = "GWAS_summary_stats.txt",
+BFILES = "plink_qc",
+PHENOS = "phenotypes.txt",
+
+
+rule all:
+	input:
+		x= "/lustre1/project/stg_00092/IBP_PRSproject/lassoSumOutput/snakeScript/output_files/lassoSum/test.txt",
+		t  = expand('{PATH1}' + "/lasso_sum/tst.txt", PATH1 = PATH),
+		valid_plot = expand('{PATH1}' + "/output_files/lassoSum/validation_plot.pdf", PATH1 = PATH),
+		top_s = expand('{PATH1}' + "/output_files/lassoSum/best_s_val.txt", PATH1 = PATH),
+		top_lambda = expand('{PATH1}' + "/output_files/lassoSum/best_lambda_val.txt", PATH1 = PATH),
+		prs_res = expand('{PATH1}' + "/output_files/lassoSum/prs_results.txt", PATH1 = PATH),
+		valid_table = expand('{PATH1}' + "/output_files/lassoSum/validation_table.txt", PATH1 = PATH),
+		r_sqrd = expand('{PATH1}' + "/output_files/lassoSum/max_r_sqr.txt", PATH1 = PATH),
+
+
+rule lasso:
+	output:
+		txt = '{PATH}'+ "/output_files/lassoSum/test.txt",
+	script:
+		"test.R"
+
+rule test:
+	output:
+		t  = '{PATH}' + "/lasso_sum/tst.txt",
+	shell:
+		"""
+		echo test > {output.t}
+		"""
+
+rule lasso1:
+	input:
+		sum_stats = expand('{PATH1}' + "/input_files/" + '{GWAS1}', PATH1 = PATH, GWAS1 = GWAS),
+		covar = expand('{PATH1}' + "/input_files/" + '{BFILES1}' + ".cov", PATH1 = PATH, BFILES1 = BFILES),
+		pcs = expand('{PATH1}' + "/input_files/" + '{BFILES1}' + ".eigenvec", PATH1 = PATH, BFILES1 = BFILES),
+		phenos = expand('{PATH1}' + "/input_files/" + '{PHENOS1}', PATH1 = PATH, PHENOS1 = PHENOS),
+
+	params:
+		b_files = expand('{PATH1}' + "/input_files/" + '{BFILES1}', PATH1= PATH, BFILES1 = BFILES),
+
+	conda:
+		"lassoSum.yml"
+
+	output:
+		validation_plot = '{PATH}' + "/output_files/lassoSum/validation_plot.pdf",
+		best_s = '{PATH}' + "/output_files/lassoSum/best_s_val.txt",
+		best_lambda = '{PATH}' + "/output_files/lassoSum/best_lambda_val.txt",
+		prs_results = '{PATH}' + "/output_files/lassoSum/prs_results.txt",
+		validation_table = '{PATH}' + "/output_files/lassoSum/validation_table.txt",
+		r_sqr = '{PATH}' + "/output_files/lassoSum/max_r_sqr.txt"
+	script:
+		"LassoSum.R"
+
+
+
