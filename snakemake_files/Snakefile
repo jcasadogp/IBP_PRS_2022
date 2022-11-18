@@ -13,14 +13,16 @@ target_files_name = "final_IBP"
 
 rule all:
 	input:
-		prs_model_fit = expand(project_dir + "002_prsice_results/{name}.prsice", name=target_files_name),
-		summary_file = expand(project_dir + "002_prsice_results/{name}.summary", name=target_files_name),
-		best_prs = expand(project_dir + "002_prsice_results/{name}.best", name=target_files_name),
+		all_score = expand(project_dir + "002_prsice_results/{name}.all_score", name=target_files_name),
 		barplot = expand(project_dir + "002_prsice_results/{name}_BARPLOT_" + today + ".png", name=target_files_name),
+		best = expand(project_dir + "002_prsice_results/{name}.best", name=target_files_name),
 		high_res_plot = expand(project_dir + "002_prsice_results/{name}_HIGH-RES_PLOT_" + today + ".png", name=target_files_name),
-		quantiles_plot = expand(project_dir + "002_prsice_results/{name}_QUANTILE_PLOT_" + today + ".png", name=target_files_name),
-		quantiles_text = expand(project_dir + "002_prsice_results/{name}_QUANTILE\_" + today + ".txt", name=target_files_name),
-		all_prs = expand(project_dir + "002_prsice_results/{name}.all.score", name=target_files_name),
+		log = expand(project_dir + "002_prsice_results/{name}.log", name=target_files_name),
+		mismatch = expand(project_dir + "002_prsice_results/{name}.mismatch", name=target_files_name),
+		prsice = expand(project_dir + "002_prsice_results/{name}.prsice", name=target_files_name),
+		quantiles_text = expand(project_dir + "002_prsice_results/{name}_QUANTILES_" + today + ".txt", name=target_files_name),
+		quantiles_plot = expand(project_dir + "002_prsice_results/{name}_QUANTILES_PLOT_" + today + ".png", name=target_files_name),
+		summary = expand(project_dir + "002_prsice_results/{name}.summary", name=target_files_name),
 
 	shell:
 		'''
@@ -37,8 +39,6 @@ rule prsice:
 
 		phenotype = project_dir + "final_phenotypes.txt",
 
-# 		covariates = project_dir + "{name}.covariate",
-
 	params:
 		target_prefix = "{name}",
 		output_prefix = project_dir + "002_prsice_results/{name}"
@@ -47,19 +47,21 @@ rule prsice:
 		barplot = project_dir + "002_prsice_results/{name}_BARPLOT_" + today + ".png",
 		high_res_plot = project_dir + "002_prsice_results/{name}_HIGH-RES_PLOT_" + today + ".png",
 
-		prs_model_fit = project_dir + "002_prsice_results/{name}.prsice",
-		summary_file = project_dir + "002_prsice_results/{name}.summary",
-		best_prs = project_dir + "002_prsice_results/{name}.best",
+		prsice = project_dir + "002_prsice_results/{name}.prsice",
+		summary = project_dir + "002_prsice_results/{name}.summary",
+		best = project_dir + "002_prsice_results/{name}.best",
 
-		log_file = project_dir + "002_prsice_results/{name}.log",
+		log = project_dir + "002_prsice_results/{name}.log",
 		
-# 		# If --all-score is indicated
-		all_prs = project_dir + "002_prsice_results/{name}.all.score",
+		all_score = project_dir + "002_prsice_results/{name}.all_score",
 		
-# 		# If --quantile [number of quantile] is indicated
-		quantiles_plot = project_dir + "002_prsice_results/{name}_QUANTILE_PLOT_" + today + ".png",
-		quantiles_text = project_dir + "002_prsice_results/{name}_QUANTILE\_" + today + ".txt",
+		quantiles_plot = project_dir + "002_prsice_results/{name}_QUANTILES_PLOT_" + today + ".png",
+		quantiles_text = project_dir + "002_prsice_results/{name}_QUANTILES_" + today + ".txt",
 
+		mismatch = project_dir + "002_prsice_results/{name}.mismatch",
+
+		# all_prs -> If --all-score is indicated
+		# quantiles_* -> If --quantile [number of quantile] is indicated
 		
 	shell:
 		'''
@@ -81,7 +83,8 @@ rule prsice:
 		    --base-maf MAF:0.01 \
 		    --base-info INFO:0.8 \
 		    --all-score \
-		    --quantile 4 \
+		    --quantile 10 \
+		    --quant-ref 3 \
 		    --out {params.output_prefix}
 		'''
 
@@ -106,6 +109,12 @@ rule prsice:
 # 		'''
 # 		Rscript PRSice/covariates.R
 # 		'''
+
+
+# 		covariates = project_dir + "{name}.covariate",
+
+
+
 
 
 
