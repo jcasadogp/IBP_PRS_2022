@@ -1,0 +1,33 @@
+PATH = "/lustre1/project/stg_00092/IBP_PRSproject/LD_pred/",
+
+GWAS = "GWAS_summary_stats.txt",
+BFILES = "plink_qc",
+PHENOS = "phenotypes.txt",
+BED = "plink_qc.bed"
+RDS = "IBD_GSA_imp_updated.rds"
+
+rule all:
+	input:
+		prs_results = expand('{PATH1}' + "prs_results.txt", PATH1 = PATH),
+		max_r_sqr = expand('{PATH1}' + "max_r_sqr.txt", PATH1 = PATH),
+
+rule LDpred:
+	input:
+		sum_stats = expand('{PATH1}' + "input_files/" + '{GWAS1}', PATH1 = PATH, GWAS1 = GWAS),
+		covar = expand('{PATH1}' + "input_files/" + '{BFILES1}' + ".cov", PATH1 = PATH, BFILES1 = BFILES),
+		pcs = expand('{PATH1}' + "input_files/" + '{BFILES1}' + ".eigenvec", PATH1 = PATH, BFILES1 = BFILES),
+		phenos = expand('{PATH1}' + "input_files/" + '{PHENOS1}', PATH1 = PATH, PHENOS1 = PHENOS),
+		bed_file = expand('{PATH1}' + "input_files/" + '{BED1}', PATH1 = PATH, BED1 = BED),
+		rds_file = expand('{PATH1}' + "input_files/" + '{RDS1}', PATH1 = PATH, RDS1 = RDS),
+
+	params:
+		b_files = expand('{PATH1}' + "input_files/" + '{BFILES1}', PATH1= PATH, BFILES1 = BFILES),
+
+	conda:
+		"LD_pred_final.yml"
+
+	output:
+		prs_results = '{PATH}' + "prs_results.txt",
+		max_r_sqr = '{PATH}' + "max_r_sqr.txt"
+	script:
+		"LD_pred.R"

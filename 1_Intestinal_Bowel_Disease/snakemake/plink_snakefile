@@ -1,0 +1,70 @@
+
+# sorted_definitive_basefile.txt can be found in the data folder 
+# still have to adjust this. 
+# name is basically final_IBP. 
+
+rule plink: 
+	input: 
+		base = project_dir + "sorted_definitive_basefile.txt", 
+	    target_fam = project_dir + "{name}.fam",
+	    target_bed = project_dir + "{name}.bed",
+	    target_bim = project_dir + "{name}.bim", 
+
+	params:
+		target = "{name}", 
+		output_prefix = "001_plink_results/{name}", 
+
+	output: 
+
+
+	shell: 
+		'''
+		plink \
+			 --bfile final_IBP \
+ 			 --clump-p1 1 \
+ 			 --clump-r2 0.1 \
+			 --clump-kb 250 \
+ 			 --clump sorted_definitive_basefile.txt \
+			 --clump-snp-field SNP_hg38 \
+			 --clump-field P.value \
+			 --allow-no-sex \
+			 --out final_IBP
+
+
+		 awk 'NR!=1{print $3}' final_IBP.clumped >  final_IBP.valid.snp
+		 awk '{print $1,$11}' sorted_definitive_basefile.txt > SNP.pvalue 
+
+		echo "0.001 0 0.001" > range_list 
+		echo "0.05 0 0.05" >> range_list
+		echo "0.1 0 0.1" >> range_list
+		echo "0.2 0 0.2" >> range_list
+		echo "0.3 0 0.3" >> range_list
+		echo "0.4 0 0.4" >> range_list
+		echo "0.5 0 0.5" >> range_list
+
+
+		plink \
+  			  --bfile final_IBP \
+   		      --score sorted_definitive_basefile.txt 1 8 9 header \
+   			  --q-score-range range_list SNP.pvalue \
+   			  --extract final_IBP.valid.snp \
+  			  --allow-no-sex \
+  			  --out final_IBP
+
+
+		plink \
+ 		      --bfile final_IBP \
+              --indep-pairwise 50 5 0.2 \
+              --allow-no-sex \
+              --out final_IBP
+
+		plink \
+  			  --bfile final_IBP \
+  			  --extract final_IBP.prune.in \
+  			  --allow-no-sex \
+ 			  --pca 10 \
+ 			  --out final_IBP
+
+
+
+
