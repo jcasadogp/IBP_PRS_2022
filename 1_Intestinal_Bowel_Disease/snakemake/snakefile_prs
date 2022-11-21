@@ -1,0 +1,100 @@
+from datetime import date
+
+# === Date for the output plots ===
+today = date.today().strftime("%Y-%m-%d")
+print("\nToday's date:", today)
+
+# === Directories ===
+project_dir = "/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/"
+
+# === Prefix of the files  ===
+target_files_name = "final_IBP",
+GWAS_file = "GWAS_summary_stats.txt",
+PHENO_file = "final_phenotypes.txt"
+
+
+rule all:
+	input:
+		all_score = expand(project_dir + "output_data/002_prsice/target_data/{name}.all_score", name=target_files_name),
+		barplot = expand(project_dir + "output_data/002_prsice/target_data/{name}_BARPLOT_" + today + ".png", name=target_files_name),
+		best = expand(project_dir + "output_data/002_prsice/target_data/{name}.best", name=target_files_name),
+		high_res_plot = expand(project_dir + "output_data/002_prsice/target_data/{name}_HIGH-RES_PLOT_" + today + ".png", name=target_files_name),
+		log = expand(project_dir + "output_data/002_prsice/target_data/{name}.log", name=target_files_name),
+		mismatch = expand(project_dir + "output_data/002_prsice/target_data/{name}.mismatch", name=target_files_name),
+		prsice = expand(project_dir + "output_data/002_prsice/target_data/{name}.prsice", name=target_files_name),
+		quantiles_text = expand(project_dir + "output_data/002_prsice/target_data/{name}_QUANTILES_" + today + ".txt", name=target_files_name),
+		quantiles_plot = expand(project_dir + "output_data/002_prsice/target_data/{name}_QUANTILES_PLOT_" + today + ".png", name=target_files_name),
+		summary = expand(project_dir + "output_data/002_prsice/target_data/{name}.summary", name=target_files_name),
+
+	shell:
+		'''
+		echo "SNAKEMAKE FILE FINISHED!!!"
+		'''
+
+rule covariates:
+	input:
+		eigenvec = project_dir + "data/{name}.eigenvec",
+		cov = project_dir + "data/{name}.cov",
+	output:
+		covariates = project_dir + "data/{name}.covariate",
+	script:
+		"r_scripts/covariates.R"
+
+
+rule prsice:
+	input:
+		base = expand(project_dir + "data/{GWAS}", GWAS=GWAS_file),
+		target_fam = project_dir + "data/{name}.fam",
+		target_bed = project_dir + "data/{name}.bed",
+		target_bim = project_dir + "data/{name}.bim",
+		phenotype = expand(project_dir + "data/{PHENO}", PHENO=PHENO_file),
+		covariates = project_dir + "data/{name}.covariate",
+
+	params:
+		prsice_R = project_dir + "prsice/PRSice.R",
+		prsice_linux = project_dir + "prsice/PRSice_linux",
+		target_prefix = "{name}",
+		output_prefix = project_dir + "output_data/002_prsice/target_data/{name}"
+
+	output:
+		barplot = project_dir + "output_data/002_prsice/target_data/{name}_BARPLOT_" + today + ".png",
+		high_res_plot = project_dir + "output_data/002_prsice/target_data/{name}_HIGH-RES_PLOT_" + today + ".png",
+
+		prsice = project_dir + "output_data/002_prsice/target_data/{name}.prsice",
+		summary = project_dir + "output_data/002_prsice/target_data/{name}.summary",
+		best = project_dir + "output_data/002_prsice/target_data/{name}.best",
+
+		log = project_dir + "output_data/002_prsice/target_data/{name}.log",
+		
+		all_score = project_dir + "output_data/002_prsice/target_data/{name}.all_score",
+		
+		quantiles_plot = project_dir + "output_data/002_prsice/target_data/{name}_QUANTILES_PLOT_" + today + ".png",
+		quantiles_text = project_dir + "output_data/002_prsice/target_data/{name}_QUANTILES_" + today + ".txt",
+
+		mismatch = project_dir + "output_data/002_prsice/target_data/{name}.mismatch",
+		
+	shell:
+		'''
+		Rscript {params.prsice_R} \
+		    --prsice {params.prsice_linux} \
+		    --base {input.base} \
+		    --snp SNP \
+			--chr CHR \
+			--bp BP \
+			--A1 Allele2 \
+			--A2 Allele1 \
+			--stat Effect \
+			--pvalue P.value \
+			--or \
+		    --target {params.target_prefix} \
+		    --binary-target F \
+	 	    --pheno {input.phenotype} \
+	 	    --cov {input.covariates} \
+	 	    --ignore-fid \
+		    --base-maf MAF:0.01 \
+		    --base-info INFO:0.8 \
+		    --all-score \
+		    --quantile 10 \
+		    --quant-ref 3 \
+		    --out {params.output_prefix}
+		'''

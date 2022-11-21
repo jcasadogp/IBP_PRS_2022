@@ -1,33 +1,45 @@
-PATH = "/lustre1/project/stg_00092/IBP_PRSproject/LD_pred/",
+# === Directories ===
+project_dir = "/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/"
 
-GWAS = "GWAS_summary_stats.txt",
-BFILES = "plink_qc",
-PHENOS = "phenotypes.txt",
-BED = "plink_qc.bed"
-RDS = "IBD_GSA_imp_updated.rds"
+# === Prefix of the files  ===
+target_files_name = "final_IBP",
+GWAS_file = "GWAS_summary_stats.txt",
+PHENO_file = "final_phenotypes.txt",
+RDS_file = "IBD_GSA_imp_updated.rds",
+
+
+# PATH = "/lustre1/project/stg_00092/IBP_PRSproject/LD_pred/",
+
+# GWAS = "GWAS_summary_stats.txt",
+# BFILES = "plink_qc",
+# PHENOS = "phenotypes.txt",
+# BED = "plink_qc.bed"
+
 
 rule all:
 	input:
-		prs_results = expand('{PATH1}' + "prs_results.txt", PATH1 = PATH),
-		max_r_sqr = expand('{PATH1}' + "max_r_sqr.txt", PATH1 = PATH),
+		prs_results = expand(project_dir + "/output_files/004_LDpred/target_data/{name}_prs_results.txt", name=target_files_name),
+		max_r_sqr = expand(project_dir + "/output_files/004_LDpred/target_data/{name}_max_r_sqr.txt", name=target_files_name),
 
 rule LDpred:
 	input:
-		sum_stats = expand('{PATH1}' + "input_files/" + '{GWAS1}', PATH1 = PATH, GWAS1 = GWAS),
-		covar = expand('{PATH1}' + "input_files/" + '{BFILES1}' + ".cov", PATH1 = PATH, BFILES1 = BFILES),
-		pcs = expand('{PATH1}' + "input_files/" + '{BFILES1}' + ".eigenvec", PATH1 = PATH, BFILES1 = BFILES),
-		phenos = expand('{PATH1}' + "input_files/" + '{PHENOS1}', PATH1 = PATH, PHENOS1 = PHENOS),
-		bed_file = expand('{PATH1}' + "input_files/" + '{BED1}', PATH1 = PATH, BED1 = BED),
-		rds_file = expand('{PATH1}' + "input_files/" + '{RDS1}', PATH1 = PATH, RDS1 = RDS),
+		sum_stats = expand(project_dir + "data/{GWAS}", GWAS=GWAS_file),
+		covar =  project_dir + "data/{name}.cov",
+		pcs = project_dir + "data/{name}.eigenvec",
+		phenos = expand(project_dir + "data/{PHENO}", PHENO=PHENO_file),
+		bed_file = project_dir + "data/{name}.bed",
+		rds_file = expand(project_dir + "data/{RDS}", RDS=RDS_file),
 
 	params:
-		b_files = expand('{PATH1}' + "input_files/" + '{BFILES1}', PATH1= PATH, BFILES1 = BFILES),
+		b_files = project_dir + "data/{name}",
+		R_file = project_dir + "r_scripts/LD_pred.R"
 
 	conda:
-		"LD_pred_final.yml"
+		 project_dir + "conda_env/LD_pred_final.yml"
 
 	output:
-		prs_results = '{PATH}' + "prs_results.txt",
-		max_r_sqr = '{PATH}' + "max_r_sqr.txt"
+		prs_results = project_dir + "/output_files/004_LDpred/target_data/{name}_prs_results.txt",
+		max_r_sqr = project_dir + "/output_files/004_LDpred/target_data/{name}_max_r_sqr.txt",
+
 	script:
-		"LD_pred.R"
+		"/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/r_scripts/LD_pred.R"

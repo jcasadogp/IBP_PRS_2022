@@ -1,0 +1,50 @@
+#need to input global vars for path to inputs
+#input for hg build
+#input for ethnic background
+#input for maf, other params
+
+# === Directories ===
+project_dir = "/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/"
+
+# === Prefix of the files  ===
+target_files_name = "final_IBP",
+GWAS_file = "GWAS_summary_stats.txt",
+PHENO_file = "final_phenotypes.txt"
+
+rule all:
+	input:
+		valid_plot = expand(project_dir + "/output_files/003_lassoSum/{name}_validation_plot.pdf", name=target_files_name),
+		top_s = expand(project_dir + "/output_files/003_lassoSum/{name}_best_s_val.txt", name=target_files_name),
+		top_lambda = expand(project_dir + "/output_files/003_lassoSum/{name}_best_lambda_val.txt", name=target_files_name),
+		prs_res = expand(project_dir + "/output_files/003_lassoSum/{name}_prs_results.txt", name=target_files_name),
+		valid_table = expand(project_dir + "/output_files/003_lassoSum/{name}_validation_table.txt", name=target_files_name),
+		r_sqrd = expand(project_dir + "/output_files/003_lassoSum/{name}_max_r_sqr.txt", name=target_files_name),
+
+
+rule lasso:
+	input:
+		sum_stats = expand(project_dir + "data/{GWAS}", GWAS=GWAS_file),
+		covar =  project_dir + "data/{name}.cov",
+		pcs = project_dir + "data/{name}.eigenvec",
+		phenos = expand(project_dir + "data/{PHENO}", PHENO=PHENO_file),
+
+	params:
+		b_files = project_dir + "data/{name}",
+		R_file = project_dir + "r_scripts/LassoSum.R"
+
+	conda:
+		project_dir + "conda_env/lassoSum.yml"
+
+	output:
+		valid_plot = project_dir + "/output_files/003_lassoSum/{name}_validation_plot.pdf",
+		top_s = project_dir + "/output_files/003_lassoSum/{name}_best_s_val.txt", 
+		top_lambda = project_dir + "/output_files/003_lassoSum/{name}_best_lambda_val.txt",
+		prs_res = project_dir + "/output_files/003_lassoSum/{name}_prs_results.txt", 
+		valid_table = project_dir + "/output_files/003_lassoSum/{name}_validation_table.txt",
+		r_sqrd = project_dir + "/output_files/003_lassoSum/{name}_max_r_sqr.txt",
+
+	script:
+		{params.R_file}
+
+
+
