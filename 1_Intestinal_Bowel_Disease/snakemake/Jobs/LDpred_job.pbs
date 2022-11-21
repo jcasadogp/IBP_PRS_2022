@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+#PBS -l nodes=1:ppn=8
+#PBS -l walltime=1:00:00
+#PBS -l pmem=10gb
+#PBS -A lp_edu_large_omics
+
+
+cd ~
+cd /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/snakemake/
+
+#module purge
+#eval "$(conda shell.bash hook)"
+#conda activate $VSC_DATA/miniconda/envs/LD_pred
+
+snakemake -s snakefile_LDpred --cores 4 --use-conda

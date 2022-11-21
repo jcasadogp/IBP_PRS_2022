@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+#PBS -l nodes=1:ppn=8
+#PBS -l walltime=2:00:00
+#PBS -l pmem=10gb
+#PBS -A lp_edu_bioinformatics_2122
+
+
+cd ~
+cd /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/snakemake/
+ 
+snakemake -s snakefile_lassoSum --cores 4 --use-conda
