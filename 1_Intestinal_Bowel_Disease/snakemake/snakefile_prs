@@ -37,9 +37,12 @@ rule covariates:
 		cov = project_dir + "data/{name}.cov",
 	output:
 		covariates = project_dir + "data/{name}.covariate",
-	script:
-		"r_scripts/covariates.R"
-
+	params:
+		R_file = project_dir + "r_scripts/covariates.R"
+	shell:
+		"""
+		Rscript {params.R_file}
+		"""
 
 rule prsice:
 	input:

@@ -1,0 +1,39 @@
+Building DAG of jobs...
+Using shell: /data/leuven/345/vsc34538/miniconda3/bin/bash
+Provided cores: 2
+Rules claiming more threads will be scaled down.
+Job stats:
+job           count    min threads    max threads
+----------  -------  -------------  -------------
+all               1              1              1
+covariates        1              1              1
+prsice            1              1              1
+total             3              1              1
+
+Select jobs to execute...
+
+[Tue Nov 22 10:09:27 2022]
+rule covariates:
+    input: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.eigenvec, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.cov
+    output: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.covariate
+    jobid: 2
+    reason: Missing output files: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.covariate
+    wildcards: name=final_IBP
+    resources: tmpdir=/tmp/a8ce6873fd
+
+Error: unexpected end of input
+Execution halted
+[Tue Nov 22 10:09:27 2022]
+Error in rule covariates:
+    jobid: 2
+    input: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.eigenvec, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.cov
+    output: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.covariate
+    shell:
+        
+		Rscript /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/r_scripts/covariates.R
+		
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2022-11-22T100926.286059.snakemake.log

@@ -1,0 +1,41 @@
+Building DAG of jobs...
+Your conda installation is not configured to use strict channel priorities. This is however crucial for having robust and correct environments (for details, see https://conda-forge.org/docs/user/tipsandtricks.html). Please consider to configure strict priorities by executing 'conda config --set channel_priority strict'.
+Using shell: /data/leuven/345/vsc34538/miniconda3/bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job       count    min threads    max threads
+------  -------  -------------  -------------
+LDpred        1              1              1
+all           1              1              1
+total         2              1              1
+
+Select jobs to execute...
+
+[Mon Nov 21 19:28:49 2022]
+rule LDpred:
+    input: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/GWAS_summary_stats.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.cov, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.eigenvec, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_phenotypes.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.bed, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/IBD_GSA_imp_updated.rds
+    output: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/004_LDpred/target_data/final_IBP_prs_results.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/004_LDpred/target_data/final_IBP_max_r_sqr.txt
+    jobid: 1
+    reason: Missing output files: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/004_LDpred/target_data/final_IBP_prs_results.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/004_LDpred/target_data/final_IBP_max_r_sqr.txt
+    wildcards: name=final_IBP
+    resources: tmpdir=/tmp/ea72cfe503
+
+Activating conda environment: .snakemake/conda/921087db310fb6fad7b71ba6dd734b92_
+Error in library(data.table) : there is no package called ‘data.table’
+Execution halted
+[Mon Nov 21 19:29:01 2022]
+Error in rule LDpred:
+    jobid: 1
+    input: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/GWAS_summary_stats.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.cov, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.eigenvec, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_phenotypes.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.bed, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/IBD_GSA_imp_updated.rds
+    output: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/004_LDpred/target_data/final_IBP_prs_results.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/004_LDpred/target_data/final_IBP_max_r_sqr.txt
+    conda-env: /lustre1/project/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/snakemake/.snakemake/conda/921087db310fb6fad7b71ba6dd734b92_
+    shell:
+        
+		Rscript /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/r_scripts/LD_pred.R
+		
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2022-11-21T192843.359470.snakemake.log

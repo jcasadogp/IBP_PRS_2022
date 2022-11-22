@@ -1,0 +1,63 @@
+Building DAG of jobs...
+Your conda installation is not configured to use strict channel priorities. This is however crucial for having robust and correct environments (for details, see https://conda-forge.org/docs/user/tipsandtricks.html). Please consider to configure strict priorities by executing 'conda config --set channel_priority strict'.
+Using shell: /data/leuven/345/vsc34538/miniconda3/bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job      count    min threads    max threads
+-----  -------  -------------  -------------
+all          1              1              1
+lasso        1              1              1
+total        2              1              1
+
+Select jobs to execute...
+
+[Mon Nov 21 21:41:28 2022]
+rule lasso:
+    input: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/GWAS_summary_stats.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.cov, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_IBP.eigenvec, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_phenotypes.txt
+    output: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_validation_plot.pdf, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_best_s_val.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_best_lambda_val.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_prs_results.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_validation_table.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_max_r_sqr.txt
+    jobid: 1
+    reason: Missing output files: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_best_s_val.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_validation_plot.pdf, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_max_r_sqr.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_prs_results.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_validation_table.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_best_lambda_val.txt
+    wildcards: name=final_IBP
+    resources: tmpdir=/tmp/2a510d59df
+
+Activating conda environment: .snakemake/conda/bcdf62162021d3054e2bc6d31af77472_
+Loading required package: usethis
+Skipping install of 'lassosum' from a github remote, the SHA1 (0e44b530) has not changed since last install.
+  Use `force = TRUE` to force installation
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+3864 out of 4110 samples kept in pheno.
+3864 out of 3864 samples kept in covar.
+[Mon Nov 21 21:52:07 2022]
+Finished job 1.
+1 of 2 steps (50%) done
+Select jobs to execute...
+
+[Mon Nov 21 21:52:07 2022]
+localrule all:
+    input: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_validation_plot.pdf, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_best_s_val.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_best_lambda_val.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_prs_results.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_validation_table.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_max_r_sqr.txt
+    jobid: 0
+    reason: Input files updated by another job: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_best_s_val.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_validation_plot.pdf, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_max_r_sqr.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_prs_results.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_validation_table.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_files/003_lassoSum/final_IBP_best_lambda_val.txt
+    resources: tmpdir=/tmp/2a510d59df
+
+[Mon Nov 21 21:52:07 2022]
+Finished job 0.
+2 of 2 steps (100%) done
+Complete log: .snakemake/log/2022-11-21T214122.891487.snakemake.log

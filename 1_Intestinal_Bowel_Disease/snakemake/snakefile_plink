@@ -1,69 +1,76 @@
-
-# sorted_definitive_basefile.txt can be found in the data folder 
-# still have to adjust this. 
-# name is basically final_IBP. 
+# === Directories ===
+project_dir = "/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease"
+target_files_name = "final_IBP"
+GWAS_capital_letters = "/data/sorted_definitive_basefile.txt"
 
 rule plink: 
 	input: 
-		base = project_dir + "sorted_definitive_basefile.txt", 
-	    target_fam = project_dir + "{name}.fam",
-	    target_bed = project_dir + "{name}.bed",
-	    target_bim = project_dir + "{name}.bim", 
+		base = project_dir + GWAS_capital_letters, 
+	    target_fam = project_dir + "data/{name}.fam",
+	    target_bed = project_dir + "data/{name}.bed",
+	    target_bim = project_dir + "data/{name}.bim", 
 
 	params:
 		target = "{name}", 
 		output_prefix = "001_plink_results/{name}", 
 
-	output: 
 
+	output: 
+		clumped = project_dir + "output_data/001_plink_results/{name}.clumped",
+		log = project_dir + "output_data/001_plink_results/{name}.log",
+		nosex = project_dir + "output_data/001_plink_results/{name}.nosex",
+
+
+		validsnp = project_dir + "output_data/001_plink_results/{name}.valid.snp",
+
+		snppvalue = project_dir + "output_data/001_plink_results/{name}.SNP.pvalue",
+		rangelist = project_dir + "output_data/001_plink_results/range_list",
+
+		profile0.001 = project_dir + "output_data/001_plink_results/{name}.0.001.profile",
+		profile0.05 = project_dir + "output_data/001_plink_results/{name}.0.05.profile",
+		profile0.1 = project_dir + "output_data/001_plink_results/{name}.0.1.profile",
+		profile0.2 = project_dir + "output_data/001_plink_results/{name}.0.2.profile",
+		profile0.3 = project_dir + "output_data/001_plink_results/{name}.0.3.profile",
+		profile0.4 = project_dir + "output_data/001_plink_results/{name}.0.4.profile",
+		profile0.5 = project_dir + "output_data/001_plink_results/{name}.0.5.profile",
+
+		nopred = project_dir + "output_data/001_plink_results/{name}.nopred",
 
 	shell: 
 		'''
 		plink \
-			 --bfile final_IBP \
+			 --bfile {params.target} \
  			 --clump-p1 1 \
  			 --clump-r2 0.1 \
 			 --clump-kb 250 \
- 			 --clump sorted_definitive_basefile.txt \
+ 			 --clump {input.base} \
 			 --clump-snp-field SNP_hg38 \
 			 --clump-field P.value \
 			 --allow-no-sex \
-			 --out final_IBP
+			 --out {params.target}
 
+		 awk 'NR!=1{print $3}' {params.target}.clumped >  {params.target}.valid.snp
+		 awk '{print $1,$11}' {input.base} > SNP.pvalue 
 
-		 awk 'NR!=1{print $3}' final_IBP.clumped >  final_IBP.valid.snp
-		 awk '{print $1,$11}' sorted_definitive_basefile.txt > SNP.pvalue 
-
-		echo "0.001 0 0.001" > range_list 
-		echo "0.05 0 0.05" >> range_list
-		echo "0.1 0 0.1" >> range_list
-		echo "0.2 0 0.2" >> range_list
-		echo "0.3 0 0.3" >> range_list
-		echo "0.4 0 0.4" >> range_list
-		echo "0.5 0 0.5" >> range_list
+		 echo "0.001 0 0.001" >  {outputs.rangelist} 
+		 echo "0.05 0 0.05" >> {outputs.rangelist} 
+		 echo "0.1 0 0.1" >> {outputs.rangelist} 
+		 echo "0.2 0 0.2" >> {outputs.rangelist} 
+		 echo "0.3 0 0.3" >> {outputs.rangelist}
+		 echo "0.4 0 0.4" >> {outputs.rangelist}
+		 echo "0.5 0 0.5" >> {outputs.rangelist} 
 
 
 		plink \
-  			  --bfile final_IBP \
-   		      --score sorted_definitive_basefile.txt 1 8 9 header \
-   			  --q-score-range range_list SNP.pvalue \
-   			  --extract final_IBP.valid.snp \
+  			  --bfile {params.target} \
+   		      --score {input.base} 1 8 9 header \
+   			  --q-score-range {outputs.rangelist} SNP.pvalue \
+   			  --extract {params.target}.valid.snp \
   			  --allow-no-sex \
-  			  --out final_IBP
+  			  --out {params.target}
 
 
-		plink \
- 		      --bfile final_IBP \
-              --indep-pairwise 50 5 0.2 \
-              --allow-no-sex \
-              --out final_IBP
-
-		plink \
-  			  --bfile final_IBP \
-  			  --extract final_IBP.prune.in \
-  			  --allow-no-sex \
- 			  --pca 10 \
- 			  --out final_IBP
+		'''
 
 
 

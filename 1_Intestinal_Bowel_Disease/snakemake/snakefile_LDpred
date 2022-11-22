@@ -18,8 +18,8 @@ RDS_file = "IBD_GSA_imp_updated.rds",
 
 rule all:
 	input:
-		prs_results = expand(project_dir + "/output_files/004_LDpred/target_data/{name}_prs_results.txt", name=target_files_name),
-		max_r_sqr = expand(project_dir + "/output_files/004_LDpred/target_data/{name}_max_r_sqr.txt", name=target_files_name),
+		prs_results = expand(project_dir + "output_files/004_LDpred/target_data/{name}_prs_results.txt", name=target_files_name),
+		max_r_sqr = expand(project_dir + "output_files/004_LDpred/target_data/{name}_max_r_sqr.txt", name=target_files_name),
 
 rule LDpred:
 	input:
@@ -35,11 +35,13 @@ rule LDpred:
 		R_file = project_dir + "r_scripts/LD_pred.R"
 
 	conda:
-		 project_dir + "conda_env/LD_pred_final.yml"
+		 project_dir + "conda_env/LDpred_env.yml"
 
 	output:
-		prs_results = project_dir + "/output_files/004_LDpred/target_data/{name}_prs_results.txt",
-		max_r_sqr = project_dir + "/output_files/004_LDpred/target_data/{name}_max_r_sqr.txt",
+		prs_results = project_dir + "output_files/004_LDpred/target_data/{name}_prs_results.txt",
+		max_r_sqr = project_dir + "output_files/004_LDpred/target_data/{name}_max_r_sqr.txt",
 
-	script:
-		"/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/r_scripts/LD_pred.R"
+	shell:
+		"""
+		Rscript {params.R_file}
+		"""

@@ -1,0 +1,32 @@
+time: 3600
+nodes: 1
+procs: 8
+account string: lp_edu_large_omics
+queue: q1h
+========================================================================
+========================================================================
+Epilogue args:
+Date: Mon Nov 21 19:29:02 CET 2022
+Allocated nodes:
+r22i27n08
+r22i27n08
+r22i27n08
+r22i27n08
+r22i27n08
+r22i27n08
+r22i27n08
+r22i27n08
+Job ID: 51328327.tier2-p-moab-2.tier2.hpc.kuleuven.be
+User ID: vsc34538
+Group ID: vsc34538
+Job Name: LDpred_job.pbs
+Session ID: 31429
+Resource List: nodes=1:ppn=8,walltime=01:00:00,pmem=10gb,neednodes=1:ppn=8
+Resources Used: cput=00:00:07,vmem=1518256kb,walltime=00:00:25,mem=75892kb,energy_used=0
+Queue Name: q1h
+Account String: lp_edu_large_omics
+-------------------------------------------------------------------------
+time: 25
+nodes: 1
+procs: 8
+account: lp_edu_large_omics

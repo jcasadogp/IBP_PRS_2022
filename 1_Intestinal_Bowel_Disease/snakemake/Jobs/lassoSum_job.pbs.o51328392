@@ -1,0 +1,44 @@
+time: 7200
+nodes: 1
+procs: 8
+account string: lp_edu_bioinformatics_2122
+queue: q24h
+========================================================================
+Coordinating summary stats with reference panel...
+Coordinating summary stats with test data...
+Coordinating summary stats, reference panel, and test data...
+Splitting genome by LD blocks ...
+Running lassosum ...
+s =  0.2 
+s =  0.5 
+s =  0.9 
+Running lassosum with s=1...
+Calculating polygenic scores ...
+pdf 
+  2 
+========================================================================
+Epilogue args:
+Date: Mon Nov 21 21:52:09 CET 2022
+Allocated nodes:
+r22i27n05
+r22i27n05
+r22i27n05
+r22i27n05
+r22i27n05
+r22i27n05
+r22i27n05
+r22i27n05
+Job ID: 51328392.tier2-p-moab-2.tier2.hpc.kuleuven.be
+User ID: vsc34538
+Group ID: vsc34538
+Job Name: lassoSum_job.pbs
+Session ID: 17351
+Resource List: nodes=1:ppn=8,walltime=02:00:00,pmem=10gb,neednodes=1:ppn=8
+Resources Used: cput=00:06:46,vmem=15330668kb,walltime=00:10:52,mem=17122976kb,energy_used=0
+Queue Name: q24h
+Account String: lp_edu_bioinformatics_2122
+-------------------------------------------------------------------------
+time: 652
+nodes: 1
+procs: 8
+account: lp_edu_bioinformatics_2122

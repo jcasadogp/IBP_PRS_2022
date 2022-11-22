@@ -1,0 +1,34 @@
+time: 3600
+nodes: 1
+procs: 8
+account string: lp_edu_bioinformatics_2122
+queue: q1h
+========================================================================
+
+Today's date: 2022-11-22
+========================================================================
+Epilogue args:
+Date: Tue Nov 22 10:09:29 CET 2022
+Allocated nodes:
+r23i13n17
+r23i13n17
+r23i13n17
+r23i13n17
+r23i13n17
+r23i13n17
+r23i13n17
+r23i13n17
+Job ID: 51328529.tier2-p-moab-2.tier2.hpc.kuleuven.be
+User ID: vsc34538
+Group ID: vsc34538
+Job Name: prsice_job.pbs
+Session ID: 22703
+Resource List: nodes=1:ppn=8,walltime=01:00:00,pmem=10gb,neednodes=1:ppn=8
+Resources Used: cput=00:00:03,vmem=296496kb,walltime=00:00:08,mem=4184kb,energy_used=0
+Queue Name: q1h
+Account String: lp_edu_bioinformatics_2122
+-------------------------------------------------------------------------
+time: 8
+nodes: 1
+procs: 8
+account: lp_edu_bioinformatics_2122
