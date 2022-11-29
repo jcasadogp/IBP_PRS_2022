@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+#PBS -l nodes=1:ppn=4
+#PBS -l walltime=4:00:00
+#PBS -l pmem=20gb
+#PBS -A lp_edu_bioinformatics_2122
+
+
+cd ~
+cd /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data
+
+plink --bfile IBD_GSA_imp_updated --allow-no-sex --indep-pairwise 50 5 0.2 --out IBD_GSA_imp_updated
+
+plink --bfile IBD_GSA_imp_updated --allow-no-sex --extract IBD_GSA_imp_updated.prune.in --cluster --pca 6 --out IBD_GSA_imp_updated

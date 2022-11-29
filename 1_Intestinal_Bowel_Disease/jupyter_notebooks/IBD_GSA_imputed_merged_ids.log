@@ -1,0 +1,16 @@
+PLINK v1.90b6.21 64-bit (19 Oct 2020)
+Options in effect:
+  --bfile ../../IBD_GSA_imputed_merged
+  --make-bed
+  --out IBD_GSA_imputed_merged_ids
+  --update-ids recode_ids.txt
+
+Hostname: r25i27n18
+Working directory: /lustre1/project/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/jupyter_notebooks
+Start time: Wed Nov 23 17:31:50 2022
+
+Random number seed: 1669221110
+193099 MB RAM detected; reserving 96549 MB for main workspace.
+Error: Failed to open ../../IBD_GSA_imputed_merged.bed.
+
+End time: Wed Nov 23 17:31:50 2022
