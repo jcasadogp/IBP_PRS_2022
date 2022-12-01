@@ -4,6 +4,12 @@ This project aims to compare four different tools that calculate Polygenic Risk 
 
 If you are working in group, remember to give access to the other members after creating any file or directory.
 
+## DOWNLOAD THIS REPOSITORY
+
+In order to run this tool you have to download this GitHub repository. It includes:
+
+
+
 ## INPUT DATA:
 
 Data needed:
