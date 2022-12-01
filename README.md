@@ -1,5 +1,5 @@
 # IBP_PRS_2022
-Edited from Julia's local computer!!!
+
 This project aims to compare four different tools that calculate Polygenic Risk Scores (PRS).
 
 If you are working in group, remember to give access to the other members after creating any file or directory.
@@ -15,6 +15,10 @@ git clone https://github.com/jcasadogp/IBP_PRS_2022.git
 ![Captura de pantalla 2022-12-01 a las 12 30 01](https://user-images.githubusercontent.com/80517901/205041802-03e42839-e716-4641-a418-c7e6643ef194.png)
 
 * We need to be careful with case-sensitive paths.
+ 
+![Captura de pantalla 2022-12-01 a las 12 34 17](https://user-images.githubusercontent.com/80517901/205042720-ba0a9b6f-1aa9-4590-9637-c694f0f46711.png)
+
+* The command is NOT CLONE, because I have been able to edit a push changes from local, and we don't want that.
 
 It includes the following folders:
 * Conda environments: several .yml files that will beused by the different scripts to create conda environments. (JULIA: The user needs conda right??)
