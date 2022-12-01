@@ -1,5 +1,5 @@
 # IBP_PRS_2022
-
+Edited from Julia's local computer!!!
 This project aims to compare four different tools that calculate Polygenic Risk Scores (PRS).
 
 If you are working in group, remember to give access to the other members after creating any file or directory.
