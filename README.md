@@ -4,6 +4,10 @@ This project aims to compare four different tools that calculate Polygenic Risk 
 
 _If you are working in group, remember to give access to the other members after creating any file or directory._
 
+## PREVIOUS REQUIREMENTS
+
+* Conda
+
 ## DOWNLOAD THIS REPOSITORY
 
 In order to run this tool you have to download this GitHub repository.
@@ -21,7 +25,7 @@ git clone https://github.com/jcasadogp/IBP_PRS_2022.git
 * The command is NOT CLONE, because I have been able to edit a push changes from local, and we don't want that.
 
 It includes the following folders:
-* Conda environments: several .yml files that will beused by the different scripts to create conda environments. (JULIA: The user needs conda right??)
+* Conda environments: several .yml files that will be used by the different scripts to create conda environments.
 * plink: installation and executable files for PLINK
 * prsice: installation, executable and R script for PRSice
 * r_scripts: it contains several R scripts that are used in the project 
