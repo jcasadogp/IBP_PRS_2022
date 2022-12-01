@@ -1,8 +1,8 @@
 # IBP_PRS_2022
 
-This project aims to compare four different tools that calculate Polygenic Risk Scores (PRS).
+This project aims to compare four different tools that calculate Polygenic Risk Scores (PRS). These tools are PLINK, PRSice, Lasso Sum and LDPred, but more tools can be added.
 
-If you are working in group, remember to give access to the other members after creating any file or directory.
+_If you are working in group, remember to give access to the other members after creating any file or directory._
 
 ## DOWNLOAD THIS REPOSITORY
 
@@ -41,17 +41,17 @@ Data needed:
 All this data will be placed in the data/ directory. To create it run:
 
 ```
-cd DIRECTORY DOWNLOADED WITH THE PARENT DIRECTORY
+cd IBP_PRS_2022
 mkdir data/
 cp FILE data/
 ```
 
 ## OUTPUT DATA:
 
-The output data will be placed in a directory called output_data/ that contains a different directry per tool. Also, inside each of the tools' directories, we will separate the data into target_data/ and exteranl_data/, depending if it comes from the tool with the 1000genome data (external_data/) or from the target data (target_data/). To create all these directories run:
+The output data will be placed in a directory called ```output_data/``` that contains a different directry per tool. Also, inside each of the tools' directories, we will separate the data into ```target_data/``` and ```exteranl_data/```, depending if it comes from the tool with the 1000genome data (```external_data/```) or from the target data (```target_data/```). To create all these directories run:
 
 ```
-cd DIRECTORY DOWNLOADED WITH THE PARENT DIRECTORY
+cd IBP_PRS_2022
 mkdir output_data/
 cd output_data/
 mkdir 001_plink/
