@@ -9,6 +9,13 @@ _If you are working in group directory, remember to give access to the other mem
 ## PREVIOUS REQUIREMENTS
 
 * Conda
+* We require that you have the effect size in beta format rather than odds ratio. To obtain the beta estimate from an odds ratio we recommend using R. 
+
+```
+data <- read.table(<GWAS_summary_statisitcs_file>, header=T)
+data$beta <- log(dat$OR)
+write.table(data, "<name_of_new_GWAS_summary_statisitcs_file>", quote=F, row.names=F)
+```
 
 ## DOWNLOAD THIS REPOSITORY
 
@@ -42,15 +49,36 @@ Data needed:
 * 1000 genome file to use as reference, which should be a subset of the cohort that is of the same ancestral background as your target cohort
 * Target files: PLINK binary format files (.fam, .bed, .bim)
 * Phenotype file: File containing the phenotype file with FID, IID, and as many columns as phenotypes you want to look at.
-* Covariates and eigenvectos files (eigenvalues are not really necessary):
+* Covariates and eigenvectos files (eigenvalues are not really necessary). To generate the eigenvector file you can must perform pruning first. Use the following commands:
+```
+plink \
+    --bfile <target_data_prefix> \
+    --indep-pairwise 200 50 0.25 \
+    --out <target_data_prefic>
+plink \
+    --bfile <target_data_prefix> \
+    --extract <target_data_prefix>.prune.in \
+    --pca 6 \
+    --out <target_data_prefix>
+```
 
 All this data will be placed in the data/ directory. To create it run:
 
 ```
 cd IBP_PRS_2022
 mkdir data/
-cp FILE data/
+cp <target_files> data/
 ```
+
+## MAKE A SNAKEMAKE CONDA ENVIRONMENT
+
+We require the user to create a conda environment for running snakemake. This is to prevent issues with different versions of snakemake.
+
+```
+cd IBP_PRS_2022/conda_env/
+conda env create -f snakemake_PRS.yml
+```
+
 
 ## OUTPUT DATA:
 
@@ -75,51 +103,103 @@ mkdir 004_LDpred/external_data/
 mkdir 005_comparison/
 ```
 
-
-## Adapting the Snakemake script
-Snakemake is a wonderful workflow engine which allows for easy adaptability and extension. At the top of the script you will see several global variables, all of which you will need to fill in. They include:
+## ADAPTING THE SNAKEMAKE FILE
+Snakemake is a wonderful workflow engine which allows for easy adaptability and extension. At the top of the script you will see several global variables, all of which you will need to fill in. They include the desired reference genome for a list of options, different p-valur thresholds to test in PLINK and PRSice, different shrinkage values to test in lassoSum and the names of specific columns from the GWAS summary statistic file. Here is an example:
 
 ```
 # === Prefix of the files  ===
-TARGET_files = "IBD_GSA_fin"
-EXTERNAL_file = "1000G_EUR_fin"
-GWAS_file = "GWAS_summary_stats.txt"
-PHENO_file = "final_phenotypes.txt"
+TARGET_files = "IBD_GSA_fin" #prefix of target file
+EXTERNAL_file = "1000G_EUR_fin" #prefix of external (1000 Genomes) file
+GWAS_file = "GWAS_summary_stats.txt" #summary statistics file
+PHENO_file = "final_phenotypes.txt" #phenotype file
 
 # === Parameters for tools ===
-lasso_thresholding_values = "0.2,0.5,0.9,1" #must be in a comma separated format with values from 0 to 1
+plink_pval_thresholds = "5e-8,1e-5,0.01,0.05,0.1,0.5" #must be in a comma separated format with values from 0 to 1, NO SPACES
+lasso_thresholding_values = "0.2,0.5,0.9,1" #must be in a comma separated format with values from 0 to 1, NO SPACES
 genome_build = "EUR.hg38" #options: "EUR.hg19", "AFR.hg19", "ASN.hg19", "EUR.hg38", "AFR.hg38", "ASN.hg38"
+major_allele = "Allele1" 
+minor_allele = "Allele2"
+chromosome_col = "CHR"
+pos_col = "pos_hg38" #the column of the basepair positions of the variants
+beta_col = "Effect" #the column of betas, effect size, of the variants
+p_value_col = "P.value" #the column of associated p-values of the variants 
+snp_col = "SNP_hg38" #the column of the SNP identifiers of the variants
+maf_value = "0.01" #can be a MAF threshold or the name of the column containing MAF estimates
+info_value = "0.8"
 ```
 
-The user should provide the file names respectively. The parameter arguments can be specified for user's specific target datas genome build. Further, the thresholding and shrinkage parameters can be adapted to allow for more niche testing.
+The user should provide the file names and column names as above. The thresholding and shrinkage parameters can be adapted to allow for more niche testing.
 
-## Adapting the job script
+## ADAPTING THE SLURM JOB SCRIPT
+
+This pipeline was developed using the Vlaams Supercomputer Centrum and utilizes a SLURM job scheduler. The user should look into details about their own institution's cluster and scheduler.
+
+We recomend the user allote at least 24 hours for the pipeline to run as the shrinkage based methods are rather computationally intesive. This will avoid running into walltime issues. Further, these shrinkage tools require large amounts of data so do not be shy with the amount of data requested.
+
+Begin your BASH script by setting the directory to the global snakemake file downloaded from this repository. Further, makesure you have created an envinroment from the `snakemake.yml` we provided as this will prevent version and dependcy issues.
+
+```
+#!/usr/bin/env bash
+
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=24:00:00
+#PBS -l pmem=120gb
+#PBS -A <account>
 
 
+cd ~
+cd <directory_to_snakemake>
 
+module purge
+eval "$(conda shell.bash hook)"
 
-# GWAS FILE -> should we tell the user to recode the column names?
+conda snakemake_PRS
 
+snakemake -s Snakefile --cores 4 --use-conda
+```
 
-## Output
+Once this is set up CONGRADULATIONS! You can now submit this job to your cluster's scheduler and patiently wait for your results. 
 
+## OUTPUT FILES
+Several intermediate files, files containing statistics and predicted PRS will be generated. Once again the user should focus their attention to the `005_comparison/` directory. This is because this directory will contain the useful plots comparing the performance of the tools. Once again, the PRS generated from these tools are **not** meant to be used directly for further analyses or publshing, rather to help the user to select which tool will have the best performance on their dataset.
 
-### Files
-
-
-### Plots
+## OUTPUT PLOTS
 Several plots will be generated for the prediction of PRS and comparison of the performance metrics across tools.
 * Each tool will have a boxplot of PRS generated comparing the cases and controls
 * A ROC curve will be generated to show how well the logistic model built from each tools PRS predictions is at correctly classifying cases and controls
 * Bar plots comparing the AUC and R<sup>2</sup> values across the tools, generated using 1000 bootstrap samples
 
-### Sources
+# SOURCES AND FURTHER POINTS OF REFERENCE 
+
+If you find yourself stuck please refer to the necessary literature, repositories and websites which will add in typical PRS errors generated during analysis. Although this is meant to be an automated pipeline that does not mean one can use the pipeline without any thought, so be *cautious*. 
 
 Berisa, T. & Pickrell, J. K. Approximately independent linkage disequilibrium blocks in human populations. Bioinformatics 32, 283-285 (2015).
 
 Choi, S.W., Mak, T.SH. & O’Reilly, P.F. Tutorial: a guide to performing polygenic risk score analyses. Nat Protoc 15, 2759–2772 (2020). 
+* User friendly website and guide can be found [here](https://choishingwan.github.io/PRS-Tutorial/)
+* Repository can be found [here](https://github.com/choishingwan/PRS-Tutorial)
 
 Mak, Timothy Shin Heng, et al. "Polygenic scores via penalized regression on summary statistics." Genetic epidemiology 41.6 (2017): 469-480. 
-* [lassoSum](https://github.com/tshmak/lassosum) repository
+* lassoSum's repository can be found [here](https://github.com/tshmak/lassosum) repository
+
+ Purcell S, Neale B, Todd-Brown K, Thomas L, Ferreira MAR, Bender D, Maller J, Sklar P, de Bakker PIW, Daly MJ & Sham PC (2007) 
+ PLINK: a toolset for whole-genome association and population-based 
+	linkage analysis. American Journal of Human Genetics, 81.
+* We utilize PLINK version 1.9
+* Link to plinks two websites: [zzz](http://pngu.mgh.harvard.edu/purcell/plink/) and [cog](https://www.cog-genomics.org/plink/1.9/)
+
+
+Jack Euesden, Cathryn M. Lewis, Paul F. O’Reilly, PRSice: Polygenic Risk Score software, Bioinformatics, Volume 31, Issue 9, 1 May 2015, Pages 1466–1468
+
+Shing Wan Choi, Paul F O'Reilly, PRSice-2: Polygenic Risk Score software for biobank-scale data, GigaScience, Volume 8, Issue 7, July 2019
+* A link to the PRSice [repository](https://github.com/choishingwan/PRSice/blob/master/docs/step_by_step.md)
+
+Florian Privé, Julyan Arbel, Bjarni J Vilhjálmsson, LDpred2: better, faster, stronger, Bioinformatics, Volume 36, Issue 22-23, 1 December 2020, Pages 5424–5431
+* A link to the [tutorial](https://privefl.github.io/bigsnpr/articles/LDpred2.html)
+* A link to the [bigsnpr package](https://www.rdocumentation.org/packages/bigsnpr/versions/1.11.6)
+
+
+Mölder, F., Jablonski, K.P., Letcher, B., Hall, M.B., Tomkins-Tinch, C.H., Sochat, V., Forster, J., Lee, S., Twardziok, S.O., Kanitz, A., Wilm, A., Holtgrewe, M., Rahmann, S., Nahnsen, S., Köster, J., 2021. Sustainable data analysis with Snakemake. F1000Res 10, 33. 
+* Documentation can be found [here](https://snakemake.readthedocs.io/en/stable/index.html)
 
 
