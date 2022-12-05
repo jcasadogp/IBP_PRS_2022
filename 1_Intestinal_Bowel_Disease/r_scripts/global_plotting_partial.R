@@ -1,9 +1,4 @@
-## TO DO when it works
-# * Try formula variable
-# * prefix in variable
-
-project_dir = "/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/"
-output_data_dir "/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/"
+## Try formula variable
 
 library(dplyr)
 library(ggplot2)
@@ -12,53 +7,36 @@ library(ROCR)
 library(pROC)
 library(pscl)
 
-
-# .........................................................................................................
-
-setwd(output_data_dir)
-
-# range_list <- snakemake@input[[1]]
-# prefix <- snakemake@params[[1]]
-
-plink_thr <- read.table("a_1_julia_plink/target_data/range_list", header=F)[,1]
-prefix <- "IBD_GSA_fin"
-
-plink_files <- c()
-for (i in 1:length(plink_thr)) {
-    plink_files[i] <- paste(prefix,'.', plink_thr[i], '.profile', sep="")
-}
-
- # .........................................................................................................
-
-no_plink_thr = length(plink_thr)
+#no_plink_thr = 
 no_prsice_thr = 7
 # no_lasso_thr = 
 # no_ldpred_thr = 
 
-# .........................................................................................................
 
-setwd(project_dir)
+# Project directory
+setwd('/lustre1/project/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/')
 
 # Phenotypes file
-phenotype <- read.table("data/final_phenotypes.txt", header=T)
-colnames(phenotype) <- c("FID", "IID","pheno") 
-
-# PC file
-pcs <- read.table("data/IBD_GSA_fin.eigenvec", header=F)
-colnames(pcs) <- c("FID", "IID", paste0("PC",1:6)) 
-
-covariate <- read.table("data/IBD_GSA_fin.cov", header=T)
-
+phenos <- read.table("data/final_phenotypes.txt", header=T)
+colnames(phenos) <- c("IID", "IID.1", "phenos")
 
 # =========================================================================================================================================================================================
 ### PLINK ###
 # =========================================================================================================================================================================================
 
+
+p.threshold <- c(5e-8,1e-5,0.01,0.05,0.1,0.5)
+
+phenotype <- read.table("/lustre1/project/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_phenotypes.txt", header=T)
+colnames(phenotype) <- c("FID", "IID","pheno") 
+
+pcs <- read.table("/lustre1/project/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/IBD_GSA_fin.eigenvec", header=F)
+colnames(pcs) <- c("FID", "IID", paste0("PC",1:6)) 
+covariate <- read.table("/lustre1/project/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/IBD_GSA_fin.cov", header=T)
+
 pheno <- merge(merge(phenotype, covariate, by=c("FID", "IID")), pcs, by=c("FID","IID"))
 
-# ........................................
-pheno$pheno <- pheno$pheno - 1 ## BE CAREFUL IF WE RUN IT SEVERAL TIMES!!!!!!!
-# ........................................
+pheno$pheno <- pheno$pheno - 1
 
 null.model <- glm(pheno~., data=pheno[,!colnames(pheno)%in%c("FID","IID")],  family = binomial(link = "logit"))
 
@@ -68,7 +46,7 @@ summary(null.model)$coeff["PC1",]
 null.r2 <- with(summary(null.model), 1 - deviance/null.deviance)
 
 prs.result <- NULL
-for(i in plink_thr){
+for(i in p.threshold){
     # Go through each p-value threshold
     prs <- read.table(paste0("/lustre1/project/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/snake_isaac/IBD_GSA_fin.",i,".profile"), header=T)
     # Merge the prs with the phenotype matrix
@@ -114,7 +92,7 @@ theme(plot.title = element_text(size=15), axis.title.y =  element_text(size=12),
 
 
 
-plink_thr <- c(0.001,0.05,0.1,0.2,0.3,0.4,0.5)
+p.threshold <- c(0.001,0.05,0.1,0.2,0.3,0.4,0.5)
 # Read in the phenotype file 
 phenotype <- read.table("EUR.height", header=T)
 # Read in the PCs
@@ -133,7 +111,7 @@ null.model <- lm(Height~., data=pheno[,!colnames(pheno)%in%c("FID","IID")])
 # And the R2 of the null model is 
 null.r2 <- summary(null.model)$r.squared
 prs.result <- NULL
-for(i in plink_thr){
+for(i in p.threshold){
     # Go through each p-value threshold
     prs <- read.table(paste0("EUR.",i,".profile"), header=T)
     # Merge the prs with the phenotype matrix
@@ -217,7 +195,7 @@ new_scores[,!colnames(new_scores)%in%c("FID","IID")]
 # =========================================================================================================================================================================================
 
 target_prs.prsice <- read.table("output_data/a_2_julia_prsice/target_data/IBD_GSA_fin.all_score", header = T)
-target_prs.prsice <- merge(target_prs.prsice, phenotype, by = "IID")
+target_prs.prsice <- merge(target_prs.prsice, phenos, by = "IID")
 
 # >>> FILL WITH THE POSITION IN WHICH THE SCORES START
 starting_scores_pos = 3
@@ -256,19 +234,19 @@ for (sc in c(starting_scores_pos:(starting_scores_pos+no_prsice_thr-1))) {
 
 # ..... update the phenotype values .....
 std_prs_ph.prsice <- std_prs.prsice
-std_prs_ph.prsice$pheno <- std_prs_ph.prsice$pheno - 1
+std_prs_ph.prsice$phenos <- std_prs_ph.prsice$phenos - 1
 
 
-plot(std_prs_ph.prsice[,3], std_prs_ph.prsice$pheno)
+plot(std_prs_ph.prsice[,3], std_prs_ph.prsice$phenos)
 
 # construct logistic regression to see which is the best of the four
-log_model.prsice.1 <- glm(pheno ~ Pt_5e.08_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
-log_model.prsice.2 <- glm(pheno ~ Pt_1e.05_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
-log_model.prsice.3 <- glm(pheno ~ Pt_0.01_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
-log_model.prsice.4 <- glm(pheno ~ Pt_0.05_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
-log_model.prsice.5 <- glm(pheno ~ Pt_0.1_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
-log_model.prsice.6 <- glm(pheno ~ Pt_0.5_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
-log_model.prsice.7 <- glm(pheno ~ Pt_1_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
+log_model.prsice.1 <- glm(phenos ~ Pt_5e.08_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
+log_model.prsice.2 <- glm(phenos ~ Pt_1e.05_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
+log_model.prsice.3 <- glm(phenos ~ Pt_0.01_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
+log_model.prsice.4 <- glm(phenos ~ Pt_0.05_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
+log_model.prsice.5 <- glm(phenos ~ Pt_0.1_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
+log_model.prsice.6 <- glm(phenos ~ Pt_0.5_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
+log_model.prsice.7 <- glm(phenos ~ Pt_1_std, data = std_prs_ph.prsice, family = binomial(link = "logit"))
 
 #make a list of the explained variance
 explained_var.prsice <- c(with(summary(log_model.prsice.1), 1 - deviance/null.deviance), 
@@ -285,14 +263,14 @@ best_prs.prsice <- which.max(explained_var.prsice)
 #obtain the best prs by indexing from which model had the best explained variance
 best_target.prsice <- std_prs_ph.prsice %>% select(1, 2, (starting_scores_pos+best_prs.prsice-1), (starting_scores_pos+no_prsice_thr+1)) #Pt_5e.08
 best_target.prsice <- best_target.prsice[complete.cases(best_target.prsice), ]
-colnames(best_target.prsice) <- c('IID', 'FID', 'std_prs', 'pheno')
+colnames(best_target.prsice) <- c('IID', 'FID', 'std_prs', 'phenos')
 head(best_target.prsice)
 
 #recode phenotype into a factor
-best_target.prsice$pheno <- as.factor(best_target.prsice$pheno)
+best_target.prsice$phenos <- as.factor(best_target.prsice$phenos)
 
 #make boxplot
-ggplot(best_target.prsice, aes(y = std_prs, group = pheno, fill = pheno, alpha = 0.5)) +
+ggplot(best_target.prsice, aes(y = std_prs, group = phenos, fill = phenos, alpha = 0.5)) +
 labs(title = "Standardized PRS for Cases and Controls", y = "Standardized PRS", fill = 'Disease Status')+
 geom_boxplot() + guides (alpha = "none") + theme_bw() + 
 theme(plot.title = element_text(size=15), axis.title.y =  element_text(size=12), axis.text.x=element_blank(),
@@ -413,7 +391,7 @@ head(best_target.prsice)
 head(best_target.lasso)
 
 
-prsice.roc <- roc(best_target.prsice$pheno, best_target.prsice$std_prs, smooth = F)
+prsice.roc <- roc(best_target.prsice$phenos, best_target.prsice$std_prs, smooth = F)
 lasso.roc <- roc(best_target.lasso$pheno, best_target.lasso$std_prs, smooth = F)
 
 #do the bootstrapping 
