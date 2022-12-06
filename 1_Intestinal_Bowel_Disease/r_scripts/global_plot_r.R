@@ -4,14 +4,13 @@
 # * starting positions plink and prsice
 # * target_prs.lasso <- read.table('IBD_GSA_fin_prs_lasso1.txt', header = T)[,1:3] ==> variable file name
 
-project_dir = snakemake@params[[1]]
+project_dir = "/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/"
 output_data_dir = paste(project_dir, "output_data/", sep="")
 
 # GET THEM FROM SNAKEMAKE
-range_list <- snakemake@input[[1]]
-target_prefix <- snakemake@params[[2]]
-external_prefix <- snakemake@params[[3]]
-pval_thr <- snakemake@params[[4]] #p-values used in PLINK and PRSice
+target_prefix <- "IBD_GSA_fin"
+external_prefix <- "1000G_EUR_fin"
+pval_thr <- "5e-8,1e-5,0.01,0.05,0.1,0.5" #p-values used in PLINK and PRSice
 
 # =========================================================================================================================================================================================
 
@@ -92,9 +91,7 @@ for (i in 1:length(plink_thr)) {
     external_prs.plink <- merge(external_prs.plink, external.prs.plink_file, by = c("FID", "IID"))
 }    
 
-cat("")
-cat("PLINK target and external scores uploaded into single dataframes")
-cat("")
+cat("\nPLINK target and external scores uploaded into single dataframes\n")
 
 no_plink_thr = length(plink_thr)
 start_pos_ext = 3
@@ -108,11 +105,8 @@ ext_sd.plink <- as.data.frame(apply(ext_scores.plink, 2, sd))
 colnames(ext_mean.plink) <- c("ext_mean.plink")
 colnames(ext_sd.plink) <- c("ext_sd.plink")
 
-print("")
-print("PLINK external scores' mean and standard deviation calculated")
-print("")
-print("PLINK starting standardization...")
-print("")
+cat("\nPLINK external scores' mean and standard deviation calculated")
+cat("\nPLINK starting standardization...")
 
 # Before standardization
 
@@ -125,8 +119,6 @@ for (sc in c(start_pos_target:(start_pos_target+no_plink_thr-1))) {
 std_prs.plink <- target_prs.plink
 colnames(std_prs.plink) <- std_names
 
-c(start_pos_target:(start_pos_target+no_plink_thr-1))
-
 for (sc in c(start_pos_target:(start_pos_target+no_plink_thr-1))) {
     col_name <- std_names[sc]
     mean <- ext_mean.plink[(sc-start_pos_target+1),1]
@@ -134,16 +126,13 @@ for (sc in c(start_pos_target:(start_pos_target+no_plink_thr-1))) {
     std_prs.plink[,sc] <- (target_prs.plink[,sc] - mean) / stdv
 }
 
-print("")
-print("PLINK standardization complete")
-print("")
+cat("\nPLINK standardization complete")
 
 std_prs_ph.plink <- std_prs.plink
 std_prs_ph.plink$PHENO <- std_prs_ph.plink$PHENO - 1
 
 # vector with the explained variance for each threshold 
 explained_var.plink <- c()
-
 for (i in 1:length(plink_thr)) {
     
     score_var <- paste('SCORE', plink_thr[i], '_std', sep="")
@@ -163,19 +152,14 @@ colnames(best_target.plink) <- c('FID', 'IID', 'pheno', 'std_prs')
 #recode phenotype into a factor
 best_target.plink$pheno <- as.factor(best_target.plink$pheno)
 
-print("")
-print("PLINK scores for best threshold saved")
-print("")
+cat("\nPLINK scores for best threshold saved")
 
 setwd(output_data_dir)
 
 #need to write table for best prs
 write.table(best_target.plink, "005_comparison/best_prs_plink.txt", col.names = TRUE, row.names = FALSE, quote = FALSE)
 
-print("")
-print("PLINK finished")
-print("")
-print("")
+cat("\nPLINK finished")
 
 # =========================================================================================================================================================================================
 ### PRSICE ###
@@ -194,9 +178,7 @@ target_prs.prsice <- merge(target_prs.prsice, target_prs.prsice_file, by = c("FI
 # Get EXTERNAL scores
 external_prs.prsice <- read.table("a_2_julia_prsice/external_data/1000G_EUR_fin.all_score", header = T)
 
-print("")
-print("PRSice target and external scores uploaded into single dataframes")
-print("")
+cat("\nPRSice target and external scores uploaded into single dataframes")
 
 no_prsice_thr = 7
 start_pos_ext = 3
@@ -210,11 +192,8 @@ ext_sd.prsice <- as.data.frame(apply(ext_scores.prsice, 2, sd))
 colnames(ext_mean.prsice) <- c("ext_mean.prsice")
 colnames(ext_sd.prsice) <- c("ext_sd.prsice")
 
-print("")
-print("PRSice external scores' mean and standard deviation calculated")
-print("")
-print("PRSice starting standardization...")
-print("")
+cat("\nPRSice external scores' mean and standard deviation calculated")
+cat("\nPRSice starting standardization...")
 
 # Before standardization
 
@@ -234,19 +213,14 @@ for (sc in c(start_pos_target:(start_pos_target+no_prsice_thr-1))) {
     std_prs.prsice[,sc] <- (target_prs.prsice[,sc] - mean) / stdv
 }
 
-
-print("")
-print("PRSice standardization complete")
-print("")
+cat("\nPRSice standardization complete")
 
 std_prs_ph.prsice <- std_prs.prsice
 std_prs_ph.prsice$pheno <- std_prs_ph.prsice$pheno - 1
 
-
 explained_var.prsice <- c()
-for (i in c(start_pos_target:(start_pos_target+no_prsice_thr-1))) {
-    
-    score_var <- colnames(std_prs_ph.prsice)[i]
+for (i in 1:no_prsice_thr) {    
+    score_var <- colnames(std_prs_ph.prsice)[start_pos_target+i-1]
     
     log_model.prsice <- glm(std_prs_ph.prsice$pheno ~ pull(std_prs_ph.prsice, score_var), family = binomial(link = "logit"))
     explained_var.prsice[i] <- with(summary(log_model.prsice), 1 - deviance/null.deviance)
@@ -263,20 +237,14 @@ colnames(best_target.prsice) <- c('FID', 'IID', 'pheno', 'std_prs')
 #recode phenotype into a factor
 best_target.prsice$pheno <- as.factor(best_target.prsice$pheno)
 
-print("")
-print("PRSice scores for best threshold saved")
-print("")
+cat("\nPRSice scores for best threshold saved")
 
 setwd(output_data_dir)
 
 #need to write table for best prs
 write.table(best_target.prsice, "005_comparison/best_prs_prsice.txt", col.names = TRUE, row.names = FALSE, quote = FALSE)
 
-print("")
-print("PRSice finished")
-print("")
-print("")
-
+cat("\nPRSice finished")
 
 
 # =========================================================================================================================================================================================
@@ -334,9 +302,7 @@ for (i in 1:lasso_thr) {
 # external_prs.lasso.4 <- read.table("a_3_julia_lasso/external_data/1000G_EUR_fin_prs_lasso4_external.txt", header = TRUE)
 # external_prs.lasso.4 <- external_prs.lasso.4[complete.cases(external_prs.lasso.4), ]
 
-print("")
-print("lassoSum target and external scores uploaded into single dataframes")
-print("")
+cat("\nlassoSum target and external scores uploaded into single dataframes")
 
 no_lasso_thr = lasso_thr
 start_pos_ext = 3
@@ -359,11 +325,8 @@ ext_sd.lasso <- as.data.frame(apply(ext_scores.lasso, 2, sd))
 colnames(ext_mean.lasso) <- c("ext_mean.prsice")
 colnames(ext_sd.lasso) <- c("ext_sd.prsice")
 
-print("")
-print("lassoSum external scores' mean and standard deviation calculated")
-print("")
-print("lassoSum starting standardization...")
-print("")
+cat("\nlassoSum external scores' mean and standard deviation calculated")
+cat("\nlassoSum starting standardization...")
 
 # Before standardization
 
@@ -389,9 +352,7 @@ for (sc in c(start_pos_target:(start_pos_target+no_lasso_thr-1))) {
 # target.prs.lasso.3$std_prs <- (target.prs.lasso.3$best.pgs - ext_mean.lasso.3) / ext_sd.lasso.3
 # target.prs.lasso.4$std_prs <- (target.prs.lasso.4$best.pgs - ext_mean.lasso.4) / ext_sd.lasso.4
 
-print("")
-print("lassoSum standardization complete")
-print("")
+cat("\nlassoSum standardization complete")
 
 std_prs_ph.lasso <- std_prs.lasso
 std_prs_ph.lasso$pheno <- std_prs_ph.lasso$pheno - 1
@@ -422,9 +383,7 @@ colnames(best_target.lasso) <- c('FID', 'IID', 'pheno', 'std_prs')
 #recode phenotype into a factor
 best_target.lasso$pheno <- as.factor(best_target.lasso$pheno)
 
-print("")
-print("lassoSum scores for best threshold saved")
-print("")
+cat("\nlassoSum scores for best threshold saved")
 
 # #construct logistic regression to see which is the best of the four
 # log_model.lasso.1 <- glm(pheno ~ std_prs, data = target.prs.lasso.1, family = binomial(link = "logit"))
@@ -457,11 +416,7 @@ setwd(output_data_dir)
 #need to write table for best prs
 write.table(best_target.lasso, "005_comparison/best_prs_lassoSum.txt", col.names = TRUE, row.names = FALSE, quote = FALSE)
 
-print("")
-print("lassoSum finished")
-print("")
-print("")
-
+cat("\nlassoSum finished")
 
 
 
