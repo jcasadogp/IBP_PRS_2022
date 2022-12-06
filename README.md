@@ -4,12 +4,12 @@ This project aims to compare four different tools that calculate Polygenic Risk 
 
 The heart of this project is a Snakemake script, therefore allowing for extension with more tools. Additionally, the project is supported for users that have access to a remote cluster. The scripts require the submission of a SLURM job, however if your cluster uses another job scheduler this can easily be adapted as well. The aim of using this pipeline is not to take the PRS directly. Rather it should aid the user in selecting the best tool to use for calculating PRS on their specific dataset. The user should rerun their own analysis on such tool with their data to allow for more fine tuning. 
 
-_If you are working in group directory, remember to give access to the other members after creating any file or directory._
+_If you are working in a shared remote directory, remember to give access to the other members after creating any file or directory._
 
 ## PREVIOUS REQUIREMENTS
 
 * Conda
-* We require that you have the effect size in beta format rather than odds ratio. To obtain the beta estimate from an odds ratio we recommend using R. 
+* We require that you have the effect size in beta metric rather than odds ratio. To obtain the beta estimate from an odds ratio we recommend using R. 
 
 ```
 data <- read.table(<GWAS_summary_statisitcs_file>, header=T)
@@ -53,12 +53,12 @@ Data needed:
 ```
 plink \
     --bfile <target_data_prefix> \
-    --indep-pairwise 200 50 0.25 \
+    --indep-pairwise 200 50 0.25 \ #can change these values (look at PLINK documentation for further explaination)
     --out <target_data_prefic>
 plink \
     --bfile <target_data_prefix> \
     --extract <target_data_prefix>.prune.in \
-    --pca 6 \
+    --pca 6 \ #we only consider the first 6 PCs in the pipeline, retaining fewer will cause errors
     --out <target_data_prefix>
 ```
 
@@ -130,6 +130,8 @@ info_value = "0.8"
 
 The user should provide the file names and column names as above. The thresholding and shrinkage parameters can be adapted to allow for more niche testing.
 
+The more thresholds and shrinkage parameters that are tested the longer the pipeline will need, espically for lassoSum.
+
 ## ADAPTING THE SLURM JOB SCRIPT
 
 This pipeline was developed using the Vlaams Supercomputer Centrum and utilizes a SLURM job scheduler. The user should look into details about their own institution's cluster and scheduler.
@@ -168,6 +170,23 @@ Several plots will be generated for the prediction of PRS and comparison of the 
 * Each tool will have a boxplot of PRS generated comparing the cases and controls
 * A ROC curve will be generated to show how well the logistic model built from each tools PRS predictions is at correctly classifying cases and controls
 * Bar plots comparing the AUC and R<sup>2</sup> values across the tools, generated using 1000 bootstrap samples
+
+## WARNINGS
+
+### MISSING PHENOTYPES
+PLINK binary files use -9 to represent missing values, however these will not be considered as missing values in our pipeline given some of the tools used do not recognize -9 as missing. It is important to remove these individuals or phenotypes prior to running the pipeline. 
+
+### ADAPTING YOUR LINEAR MODELS
+When calculating PRS we account for covariates. However, when constructing logisitc regression models we do not account for any covariates since our example data did not have any. Therefore, if you wish to include covariates in your logisitc regression you will have to manually adapt the R scripts. One R script, _______, decides the best PRS generated across the different thresholds tested. Another R script, _______, produces the plots for comparing the tools. The covariates can be added by addapting the logisitc regression code as follwos:
+
+```
+#original command
+glm(phenos ~ <prs_column>, data = std_prs_ph.prsice, family = binomial(link = "logit"))
+
+#updated command 
+glm(phenos ~ <prs_column> + <covariate_1>  + ... + <covariate_n>, data = std_prs_ph.prsice, family = binomial(link = "logit"))
+```
+
 
 # SOURCES AND FURTHER POINTS OF REFERENCE 
 
