@@ -67,6 +67,8 @@ rule all:
 		lasso_prs = project_dir + comparison_output_dir + "best_prs_lassoSum.txt",
 		# ldpred_prs = project_dir + comparison_output_dir + "best_prs_LDpred.txt",
 
+		plots = project_dir + comparison_output_dir + "Rplots.pdf"
+
 rule clump:
 	input:
 		sum_stats = expand(project_dir + "data/{GWAS}", GWAS = GWAS_file), 

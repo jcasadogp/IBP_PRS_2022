@@ -1,0 +1,124 @@
+Building DAG of jobs...
+Your conda installation is not configured to use strict channel priorities. This is however crucial for having robust and correct environments (for details, see https://conda-forge.org/docs/user/tipsandtricks.html). Please consider to configure strict priorities by executing 'conda config --set channel_priority strict'.
+Using shell: /usr/bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job                    count    min threads    max threads
+-------------------  -------  -------------  -------------
+all                        1              1              1
+get_best_prs               1              1              1
+performance_metrics        1              1              1
+total                      3              1              1
+
+Select jobs to execute...
+
+[Tue Dec  6 11:39:52 2022]
+rule get_best_prs:
+    input: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/target_data/range_list, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/data/final_phenotypes.txt
+    output: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_plink.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_prsice.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_lassoSum.txt
+    jobid: 18
+    reason: Missing output files: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_prsice.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_plink.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_lassoSum.txt
+    resources: tmpdir=/tmp/c1b79185e8
+
+Activating conda environment: .snakemake/conda/dbf0ea8e2897c8ab54a8ec9306e691d0_
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Type 'citation("pROC")' for a citation.
+
+Attaching package: ‘pROC’
+
+The following objects are masked from ‘package:stats’:
+
+    cov, smooth, var
+
+Classes and Methods for R developed in the
+Political Science Computational Laboratory
+Department of Political Science
+Stanford University
+Simon Jackman
+hurdle and zeroinfl functions by Achim Zeileis
+[Tue Dec  6 11:39:55 2022]
+Finished job 18.
+1 of 3 steps (33%) done
+Select jobs to execute...
+
+[Tue Dec  6 11:39:55 2022]
+rule performance_metrics:
+    input: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_plink.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_prsice.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_lassoSum.txt
+    output: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/Rplots.pdf
+    jobid: 19
+    reason: Missing output files: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/Rplots.pdf; Input files updated by another job: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_prsice.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_plink.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_lassoSum.txt
+    resources: tmpdir=/tmp/c1b79185e8
+
+Activating conda environment: .snakemake/conda/dbf0ea8e2897c8ab54a8ec9306e691d0_
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Type 'citation("pROC")' for a citation.
+
+Attaching package: ‘pROC’
+
+The following objects are masked from ‘package:stats’:
+
+    cov, smooth, var
+
+Classes and Methods for R developed in the
+Political Science Computational Laboratory
+Department of Political Science
+Stanford University
+Simon Jackman
+hurdle and zeroinfl functions by Achim Zeileis
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+[Tue Dec  6 11:40:50 2022]
+Finished job 19.
+2 of 3 steps (67%) done
+Select jobs to execute...
+
+[Tue Dec  6 11:40:50 2022]
+localrule all:
+    input: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/target_data/IBD_GSA_fin.clumped, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/external_data/1000G_EUR_fin.clumped, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/target_data/IBD_GSA_fin.valid.snp, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/external_data/1000G_EUR_fin.valid.snp, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/target_data/SNP.pvalue, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/external_data/SNP.pvalue, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/target_data/range_list, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/external_data/range_list, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/target_data/condensed.GWAS.stats, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/external_data/condensed.GWAS.stats, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/target_data/IBD_GSA_fin_prs_status, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_1_julia_plink/external_data/1000G_EUR_fin_prs_status, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_2_julia_prsice/target_data/IBD_GSA_fin.snp, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_2_julia_prsice/target_data/IBD_GSA_fin.all_score, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_2_julia_prsice/external_data/1000G_EUR_fin.all_score, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_3_julia_lasso/target_data/IBD_GSA_fin_validation_plot.pdf, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_3_julia_lasso/external_data/1000G_EUR_fin_prs_lasso1_external.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_3_julia_lasso/external_data/1000G_EUR_fin_prs_lasso2_external.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_3_julia_lasso/external_data/1000G_EUR_fin_prs_lasso3_external.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/a_3_julia_lasso/external_data/1000G_EUR_fin_prs_lasso4_external.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_plink.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_prsice.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_lassoSum.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/Rplots.pdf
+    jobid: 0
+    reason: Input files updated by another job: /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_plink.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_lassoSum.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/best_prs_prsice.txt, /staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/output_data/005_comparison/Rplots.pdf
+    resources: tmpdir=/tmp/c1b79185e8
+
+[Tue Dec  6 11:40:50 2022]
+Finished job 0.
+3 of 3 steps (100%) done
+Complete log: .snakemake/log/2022-12-06T113950.253961.snakemake.log
