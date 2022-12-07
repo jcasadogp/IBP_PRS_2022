@@ -172,6 +172,7 @@ Several plots will be generated for the prediction of PRS and comparison of the 
 * Bar plots comparing the AUC and R<sup>2</sup> values across the tools, generated using 1000 bootstrap samples
 
 ## WARNINGS
+The GWAS base dataset should contain uppercase alleles. Distuinguish affect allele vs non-affected allele. In our case A2 is the affected allele. 
 
 ### MISSING PHENOTYPES
 PLINK binary files use -9 to represent missing values, however these will not be considered as missing values in our pipeline given some of the tools used do not recognize -9 as missing. It is important to remove these individuals or phenotypes prior to running the pipeline. 
