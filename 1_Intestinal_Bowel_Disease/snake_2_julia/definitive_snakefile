@@ -65,6 +65,7 @@ rule all:
 		plink_prs = project_dir + comparison_output_dir + "best_prs_plink.txt",
 		prsice_prs = project_dir + comparison_output_dir + "best_prs_prsice.txt",
 		lasso_prs = project_dir + comparison_output_dir + "best_prs_lassoSum.txt",
+		ldpred_prs = project_dir + comparison_output_dir + "best_prs_LDpred.txt",
 
 		best_prs = project_dir + comparison_output_dir + "best_prs_all.txt",
 		best_thr = project_dir + comparison_output_dir + "best_thr_all.txt",
@@ -73,8 +74,7 @@ rule all:
 		rocplot = project_dir + comparison_output_dir + "ROC_plot.pdf",
 		aucplots = project_dir + comparison_output_dir + "AUC_plot.pdf",
 		rsqrplots = project_dir + comparison_output_dir + "Rsqr_plot.pdf",
-
-		# ldpred_prs = project_dir + comparison_output_dir + "best_prs_LDpred.txt",
+		
 
 rule clump:
 	input:
@@ -461,10 +461,10 @@ rule get_best_prs:
 		plink_prs = project_dir + comparison_output_dir + "best_prs_plink.txt",
 		prsice_prs = project_dir + comparison_output_dir + "best_prs_prsice.txt",
 		lasso_prs = project_dir + comparison_output_dir + "best_prs_lassoSum.txt",
+		ldpred_prs = project_dir + comparison_output_dir + "best_prs_LDpred.txt",
 		best_thr = project_dir + comparison_output_dir + "best_thr_all.txt",
-		# ldpred_prs = project_dir + comparison_output_dir + "best_prs_LDpred.txt",
 	script:
-		"/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/r_scripts/global_plot_snakemake.R"
+		"/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/r_scripts/global_best_plots.R"
 
 
 rule performance_metrics:
@@ -472,9 +472,10 @@ rule performance_metrics:
 		plink_prs = project_dir + comparison_output_dir + "best_prs_plink.txt",
 		prsice_prs = project_dir + comparison_output_dir + "best_prs_prsice.txt",
 		lasso_prs = project_dir + comparison_output_dir + "best_prs_lassoSum.txt",
-		# ldpred_prs = project_dir + comparison_output_dir + "best_prs_LDpred.txt",
+		ldpred_prs = project_dir + comparison_output_dir + "best_prs_LDpred.txt",
 	params:
-		project_dir = project_dir
+		project_dir = project_dir,
+		target_prefix = TARGET_files,
 	conda:
 		project_dir + "conda_env/ibp_2022_r_env.yml"
 	output:

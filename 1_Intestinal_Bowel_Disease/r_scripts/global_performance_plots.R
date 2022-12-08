@@ -1,6 +1,4 @@
-## BOXPLOTS, ROC, AUC, R2
-
-print("Entering the R script")
+print("Entering the R script: global_performance_plots.R")
 
 library(dplyr)
 library(ggplot2)
@@ -12,29 +10,32 @@ library(stringr)
 
 # =========================================================================================================================================================================================
 
-# project_dir = snakemake@params[[1]]
-project_dir = "/staging/leuven/stg_00092/IBP_PRSproject/1_Intestinal_Bowel_Disease/"
-output_data_dir = paste(project_dir, "output_data/", sep="")
+# # GET THEM FROM SNAKEMAKE
 
-setwd(paste(output_data_dir,'005_good_comparison_2',sep=""))
+project_dir = snakemake@params[[1]]
+target_prefix = snakemake@params[[2]]
 
-# best_target.plink_file <- snakemake@input[[1]]
-# best_target.prsice_file <- snakemake@input[[2]]
-# best_target.lasso_file <- snakemake@input[[3]]
-# # best_target.ldpred_file <- snakemake@input[[4]]
+best_target.plink_file <- snakemake@input[[1]]
+best_target.prsice_file <- snakemake@input[[2]]
+best_target.lasso_file <- snakemake@input[[3]]
+# best_target.ldpred_file <- snakemake@input[[4]]
+best_target.ldpred_file <- best_target.lasso_file
 
-# print(best_target.plink_file)
-# print("See if we get the whole path or only the name")
+# =========================================================================================================================================================================================
 
-# best_target.plink <- read.table(best_target.plink_file, header=T)
-# best_target.prsice <- read.table(best_target.prsice_file, header=T)
-# best_target.lasso <- read.table(best_target.lasso_file, header=T)
-# # best_target.ldpred <- read.table(best_target.ldpred_file, header=T)
+setwd(project_dir)
 
-best_target.plink <- read.table("best_prs_plink.txt", header=T)
-best_target.prsice <- read.table("best_prs_prsice.txt", header=T)
-best_target.lasso <- read.table("best_prs_lassoSum.txt", header=T)
-best_target.ldpred <- best_target.lasso
+# PC file
+pcs_file = paste('data/', target_prefix, '.eigenvec', sep="")
+pcs <- read.table(pcs_file, header=F)
+colnames(pcs) <- c("FID", "IID", paste0("PC",1:6)) 
+
+# =========================================================================================================================================================================================
+
+best_target.plink <- read.table(best_target.plink_file, header=T)
+best_target.prsice <- read.table(best_target.prsice_file, header=T)
+best_target.lasso <- read.table(best_target.lasso_file, header=T)
+best_target.ldpred <- read.table(best_target.ldpred_file, header=T)
 
 # =========================================================================================================================================================================================
 ### BOXPLOTS ###
@@ -53,7 +54,11 @@ tmp.all <- rbind(tmp.plink, tmp.prsice, tmp.lasso, tmp.ldpred)
 
 tmp.all$pheno <- as.factor(tmp.all$pheno)
 
+#need to write table for all the best prs
+write.table(tmp.all, snakemake@output[[1]], col.names = TRUE, row.names = FALSE, quote = FALSE)
+
 #make boxplot
+pdf(snakemake@output[[2]]) 
 tmp.all %>%
     arrange(std_prs) %>%
     mutate(tool = factor(tool, levels=c('PLINK', 'PRSice', 'lassoSum', 'LDpred'))) %>%
@@ -63,6 +68,7 @@ tmp.all %>%
     theme(plot.title = element_text(size=15), axis.title.y =  element_text(size=12), axis.text.x=element_blank(),
       axis.ticks.x=element_blank()) + scale_fill_discrete(labels = c("Controls","Cases")) +
     facet_wrap(~ tool, ncol = 4)
+dev.off()
 
 
 
@@ -73,13 +79,13 @@ tmp.all %>%
 plink.roc <- roc(best_target.plink$pheno, best_target.plink$std_prs, smooth = F)
 prsice.roc <- roc(best_target.prsice$pheno, best_target.prsice$std_prs, smooth = F)
 lasso.roc <- roc(best_target.lasso$pheno, best_target.lasso$std_prs, smooth = F)
-# ldpred.roc <- roc(best_target.ldpred$pheno, best_target.ldpred$std_prs, smooth = F)
+ldpred.roc <- roc(best_target.ldpred$pheno, best_target.ldpred$std_prs, smooth = F)
 
 #do the bootstrapping 
 plink.roc.ci <- ci.auc(plink.roc, method = "bootstrap", boot.n = 1000, boot.stratified = TRUE)
 prsice.roc.ci <- ci.auc(prsice.roc, method = "bootstrap", boot.n = 1000, boot.stratified = TRUE)
 lasso.roc.ci <- ci.auc(lasso.roc, method = "bootstrap", boot.n = 1000, boot.stratified = TRUE)
-# ldpred.roc.ci <- ci.auc(ldpred.roc, method = "bootstrap", boot.n = 1000, boot.stratified = TRUE)
+ldpred.roc.ci <- ci.auc(ldpred.roc, method = "bootstrap", boot.n = 1000, boot.stratified = TRUE)
 
 
 # =====================================================================
@@ -91,12 +97,12 @@ ldpred.roc.ci <- lasso.roc.ci
 #plot the roc curve
 #to add more curves just add the roc output to the list
 #example: `list(lasso=lasso.roc, PLINK = plink.roc)
-
+pdf(snakemake@output[[3]]) 
 ggroc(list(PLINK=plink.roc, PRSice=prsice.roc, lassoSum=lasso.roc, LDpred=ldpred.roc)) + 
   labs(title = "Reciever Operator Curve Across\nConstructed Logisitc Models from PRS Tools ",y = "Sensitivity (True Positive Rate)", x = "Specificty (1 - False Positive Rate)", col = "Tool") +
   theme_bw() + theme(plot.title = element_text(size=15), axis.title.y = element_text(size=12)) +
   geom_abline(intercept = 1, slope = 1)
-
+dev.off()
 
 # =========================================================================================================================================================================================
 ### Performance metrics: AUC and R2 ###
@@ -127,6 +133,7 @@ performance_metrics_auc$estimate <- as.numeric(performance_metrics_auc$estimate)
 performance_metrics_auc$upper_95 <- as.numeric(performance_metrics_auc$upper_95)
 
 #make the auc plot
+pdf(snakemake@output[[4]]) 
 performance_metrics_auc %>%
     arrange(estimate) %>%
     mutate(tool = factor(tool, levels=c('PLINK', 'PRSice', 'lassoSum', 'LDpred'))) %>%
@@ -136,13 +143,19 @@ performance_metrics_auc %>%
     theme(plot.title = element_text(size=15), axis.title.y = element_text(size=12), axis.text.x=element_blank(),
           axis.ticks.x=element_blank())+
     geom_errorbar(aes(ymin = lower_95, ymax = upper_95), width = 0.05) 
-
+dev.off()
 
 ### R2 ###
 
 #bootstrap
 n <- nrow(best_target.plink)
 resamples <- 1000
+
+
+best_target.plink <-  merge(best_target.plink, pcs, by =c('FID','IID'))
+best_target.prsice <-  merge(best_target.prsice, pcs, by =c('FID','IID'))
+best_target.lasso <-  merge(best_target.lasso, pcs, by =c('FID','IID'))
+best_target.ldpred <-  merge(best_target.ldpred, pcs, by =c('FID','IID'))
 
 bootstrap_pseudor2_plink <- sapply(1:resamples, function(j) {
   bootstraps <- sample(c(1:n), n, TRUE)
@@ -159,15 +172,35 @@ bootstrap_pseudor2_lasso <- sapply(1:resamples, function(j) {
   pR2(glm(best_target.lasso$pheno[bootstraps] ~ best_target.lasso$std_prs[bootstraps], family = binomial("logit")))[["McFadden"]]
 })
 
-# bootstrap_pseudor2_ldpred <- sapply(1:resamples, function(j) {
+bootstrap_pseudor2_ldpred <- sapply(1:resamples, function(j) {
+  bootstraps <- sample(c(1:n), n, TRUE)
+  pR2(glm(best_target.ldpred$pheno[bootstraps] ~ best_target.ldpred$std_prs[bootstraps], family = binomial("logit")))[["McFadden"]]
+})
+
+
+## ==================================================================================================================
+## If we you want to account for covariates, try the next code:
+
+# bootstrap_pseudor2_plink <- sapply(1:resamples, function(j) {
 #   bootstraps <- sample(c(1:n), n, TRUE)
-#   pR2(glm(best_target.ldpred$pheno[bootstraps] ~ best_target.ldpred$std_prs[bootstraps], family = binomial("logit")))[["McFadden"]]
+#   pR2(glm(best_target.plink$pheno[bootstraps] ~ best_target.plink$std_prs[bootstraps] + best_target.plink$PC1[bootstraps] + best_target.plink$PC2[bootstraps] + best_target.plink$PC3[bootstraps] + best_target.plink$PC4[bootstraps] + best_target.plink$PC5[bootstraps] + best_target.plink$PC6[bootstraps], family = binomial("logit")))[["McFadden"]]
 # })
 
-# =====================================================================
-## when LDpred results => delete
-bootstrap_pseudor2_ldpred <- bootstrap_pseudor2_lasso
-# =====================================================================
+# bootstrap_pseudor2_prsice <- sapply(1:resamples, function(j) {
+#   bootstraps <- sample(c(1:n), n, TRUE)
+#   pR2(glm(best_target.prsice$pheno[bootstraps] ~ best_target.prsice$std_prs[bootstraps] + best_target.prsice$PC1[bootstraps] + best_target.prsice$PC2[bootstraps] + best_target.prsice$PC3[bootstraps] + best_target.prsice$PC4[bootstraps] + best_target.prsice$PC5[bootstraps] + best_target.prsice$PC6[bootstraps], family = binomial("logit")))[["McFadden"]]
+# })
+
+# bootstrap_pseudor2_lasso <- sapply(1:resamples, function(j) {
+#   bootstraps <- sample(c(1:n), n, TRUE)
+#   pR2(glm(best_target.lasso$pheno[bootstraps] ~ best_target.lasso$std_prs[bootstraps]  + best_target.lasso$PC1[bootstraps] + best_target.lasso$PC2[bootstraps] + best_target.lasso$PC3[bootstraps] + best_target.lasso$PC4[bootstraps] + best_target.lasso$PC5[bootstraps] + best_target.lasso$PC6[bootstraps], family = binomial("logit")))[["McFadden"]]
+# })
+
+# bootstrap_pseudor2_ldpred <- sapply(1:resamples, function(j) {
+#   bootstraps <- sample(c(1:n), n, TRUE)
+#   pR2(glm(best_target.ldpred$pheno[bootstraps] ~ best_target.ldpred$std_prs[bootstraps]  + best_target.ldpred$PC1[bootstraps] + best_target.ldpred$PC2[bootstraps] + best_target.ldpred$PC3[bootstraps] + best_target.ldpred$PC4[bootstraps] + best_target.ldpred$PC5[bootstraps] + best_target.ldpred$PC6[bootstraps], family = binomial("logit")))[["McFadden"]]
+# })
+## ==================================================================================================================
 
 #save the upper and lower bounds, as the estimate
 lower_95_plink <- mean(bootstrap_pseudor2_plink) - 1.96 * sd(bootstrap_pseudor2_plink)
@@ -209,14 +242,7 @@ performance_metrics_rsqr$upper_95 <- as.numeric(performance_metrics_rsqr$upper_9
 
 
 #make the r-sqr plot
-# ggplot(performance_metrics_rsqr, aes(y = estimate, x = tool, fill = tool)) + geom_bar(stat = "identity", width = 0.5, size =0.5, color = "black")+
-# labs(title = bquote("Bootstrapped Estimation of"~R^2~"Value Across Tools"), y = bquote(R^2~"(Percentage of Explained Variation)"), x = '', fill = 'Tool') +
-# theme_bw() + geom_text(aes(label=scaleFUN(estimate)), vjust=0, size=3.5,y = -0.005) +
-# theme(plot.title = element_text(size=15), axis.title.y = element_text(size=12), axis.text.x=element_blank(),
-#       axis.ticks.x=element_blank())+
-# geom_errorbar(aes(ymin = lower_95, ymax = upper_95), width = 0.05) 
-
-#make the r-sqr plot
+pdf(snakemake@output[[5]]) 
 performance_metrics_rsqr %>%
     arrange(estimate) %>%
     mutate(tool = factor(tool, levels=c('PLINK', 'PRSice', 'lassoSum', 'LDpred'))) %>%
@@ -226,5 +252,7 @@ performance_metrics_rsqr %>%
     theme(plot.title = element_text(size=15), axis.title.y = element_text(size=12), axis.text.x=element_blank(),
           axis.ticks.x=element_blank())+
     geom_errorbar(aes(ymin = lower_95, ymax = upper_95), width = 0.05) 
+dev.off()
 
-
+# ===========
+warnings()
